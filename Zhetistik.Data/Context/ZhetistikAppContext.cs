@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Configuration;
@@ -7,7 +8,7 @@ using Zhetistik.Data.Models;
 
 namespace Zhetistik.Data.Context
 {
-    public class ZhetistikAppContext : DbContext
+    public class ZhetistikAppContext : IdentityDbContext<ZhetistikUser>
     {
         public ZhetistikAppContext()
         {
@@ -35,17 +36,22 @@ namespace Zhetistik.Data.Context
         public DbSet<City> Cities { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<School> Schools {get; set;}
-        public DbSet<University> Universities { get; set;}
-        public DbSet<UniversityType> UniversityTypes { get; set;}
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
                 const string pc = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ZhetistikApp";
-                const string laptop = "";
-                optionsBuilder.UseSqlServer(laptop);
+                //const string laptop = "";
+                optionsBuilder.UseSqlServer(pc);
             }
         }
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+            builder.Entity<Country>().HasIndex(x=>x.CountryName).IsUnique(true);
+            builder.Entity<City>().HasIndex(x=>x.CityName).IsUnique(true);
+            builder.Entity<School>().HasIndex(x=>x.SchoolName).IsUnique(true);
+        }      
     }
 }

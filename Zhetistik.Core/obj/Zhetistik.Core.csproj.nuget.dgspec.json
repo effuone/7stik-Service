@@ -1,33 +1,39 @@
 {
   "format": 1,
   "restore": {
-    "/home/effuone/Desktop/Zhetistik/Zhetistik.Core/Zhetistik.Core.csproj": {}
+    "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj": {}
   },
   "projects": {
-    "/home/effuone/Desktop/Zhetistik/Zhetistik.Core/Zhetistik.Core.csproj": {
+    "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/effuone/Desktop/Zhetistik/Zhetistik.Core/Zhetistik.Core.csproj",
+        "projectUniqueName": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
         "projectName": "Zhetistik.Core",
-        "projectPath": "/home/effuone/Desktop/Zhetistik/Zhetistik.Core/Zhetistik.Core.csproj",
-        "packagesPath": "/home/effuone/.nuget/packages/",
-        "outputPath": "/home/effuone/Desktop/Zhetistik/Zhetistik.Core/obj/",
+        "projectPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
+        "packagesPath": "C:\\Users\\777\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+        ],
         "configFilePaths": [
-          "/home/effuone/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\777\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net6.0": {
             "targetAlias": "net6.0",
             "projectReferences": {
-              "/home/effuone/Desktop/Zhetistik/Zhetistik.Data/Zhetistik.Data.csproj": {
-                "projectPath": "/home/effuone/Desktop/Zhetistik/Zhetistik.Data/Zhetistik.Data.csproj"
+              "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
+                "projectPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj"
               }
             }
           }
@@ -56,26 +62,32 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.200/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     },
-    "/home/effuone/Desktop/Zhetistik/Zhetistik.Data/Zhetistik.Data.csproj": {
+    "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/effuone/Desktop/Zhetistik/Zhetistik.Data/Zhetistik.Data.csproj",
+        "projectUniqueName": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
         "projectName": "Zhetistik.Data",
-        "projectPath": "/home/effuone/Desktop/Zhetistik/Zhetistik.Data/Zhetistik.Data.csproj",
-        "packagesPath": "/home/effuone/.nuget/packages/",
-        "outputPath": "/home/effuone/Desktop/Zhetistik/Zhetistik.Data/obj/",
+        "projectPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
+        "packagesPath": "C:\\Users\\777\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
+        ],
         "configFilePaths": [
-          "/home/effuone/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\777\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -94,6 +106,14 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[11.0.1, )"
+            },
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
             "Dapper": {
               "target": "Package",
               "version": "[2.0.123, )"
@@ -101,6 +121,10 @@
             "Dapper.Contrib": {
               "target": "Package",
               "version": "[2.0.78, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[6.0.2, )"
             },
             "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
               "target": "Package",
@@ -130,6 +154,10 @@
               "target": "Package",
               "version": "[6.0.2, )"
             },
+            "Microsoft.IdentityModel.Tokens": {
+              "target": "Package",
+              "version": "[6.16.0, )"
+            },
             "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
               "target": "Package",
               "version": "[6.0.2, )"
@@ -141,6 +169,10 @@
             "System.Data.SqlClient": {
               "target": "Package",
               "version": "[4.8.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[6.16.0, )"
             }
           },
           "imports": [
@@ -158,7 +190,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.200/RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
         }
       }
     }
