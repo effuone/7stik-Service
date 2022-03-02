@@ -6,6 +6,9 @@ namespace Zhetistik.Data.AuthModels
     {
         [Required]
         [MaxLength(20)]
+        public string UserName { get; set; }
+        [Required]
+        [MaxLength(20)]
         public string FirstName { get; set; }
          [MaxLength(20)]
         [Required]
@@ -13,11 +16,11 @@ namespace Zhetistik.Data.AuthModels
          [MaxLength(30)]
         [Required]
         public string Email { get; set; }
+        [MaxLength(30)]
+        [Required]
+        public string PhoneNumber { get; set; }
         [Required]
          [MaxLength(40)]
         public string Password {get; set;}
-        [Required]
-         [MaxLength(40)]
-        public string ConfirmPassword {get; set;}
     }
 }

@@ -41,9 +41,9 @@ namespace Zhetistik.Data.Context
         {
             if (!optionsBuilder.IsConfigured)
             {
-                const string pc = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ZhetistikApp";
-                //const string laptop = "";
-                optionsBuilder.UseSqlServer(pc);
+                //const string pc = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=ZhetistikApp";
+                const string laptop = "Server=tcp:localhost;Database=ZhetistikDb;User Id=SA;Password=Effuone1990*";
+                optionsBuilder.UseSqlServer(laptop);
             }
         }
         protected override void OnModelCreating(ModelBuilder builder)

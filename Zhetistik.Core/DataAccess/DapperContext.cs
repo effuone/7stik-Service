@@ -10,7 +10,7 @@ namespace Zhetistik.Core.DataAccess
         private readonly string _connectionString; 
         public DapperContext(IConfiguration configuration) 
         { 
-            _configuration = configuration; _connectionString = _configuration.GetConnectionString("ZhetistikDb"); 
+            _configuration = configuration; _connectionString = _configuration.GetConnectionString("LaptopConnection"); 
         } 
         public IDbConnection CreateConnection() => new SqlConnection(_connectionString);
     }

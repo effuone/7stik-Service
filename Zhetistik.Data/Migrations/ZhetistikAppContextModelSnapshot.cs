@@ -245,7 +245,7 @@ namespace Zhetistik.Data.Migrations
                     b.HasIndex("CityName")
                         .IsUnique();
 
-                    b.ToTable("Cities");
+                    b.ToTable("Cities", (string)null);
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.Country", b =>
@@ -265,7 +265,7 @@ namespace Zhetistik.Data.Migrations
                     b.HasIndex("CountryName")
                         .IsUnique();
 
-                    b.ToTable("Countries");
+                    b.ToTable("Countries", (string)null);
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.Location", b =>
@@ -288,7 +288,7 @@ namespace Zhetistik.Data.Migrations
 
                     b.HasIndex("CountryId");
 
-                    b.ToTable("Locations");
+                    b.ToTable("Locations", (string)null);
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.School", b =>
@@ -320,7 +320,7 @@ namespace Zhetistik.Data.Migrations
                     b.HasIndex("SchoolName")
                         .IsUnique();
 
-                    b.ToTable("Schools");
+                    b.ToTable("Schools", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
