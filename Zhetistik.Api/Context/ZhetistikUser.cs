@@ -1,7 +1,7 @@
-using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.AspNetCore.Identity;
 
-namespace Zhetistik.Data.Context
+namespace Zhetistik.Api.Context
 {
     public class ZhetistikUser : IdentityUser
     {
@@ -9,5 +9,8 @@ namespace Zhetistik.Data.Context
         public string FirstName { get; set; }
         [MaxLength(40)]
         public string LastName { get; set; }
+        public int? CandidateId { get; set; }
+        [ForeignKey("CandidateId")]
+        public Candidate Candidate { get; set; }
     }
 }

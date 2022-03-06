@@ -14,5 +14,6 @@ namespace Zhetistik.Data.Models
         public string Image {get; set;}
         public DateTime FoundationYear { get; set; }
         public Location Location { get; set; }
+        public IEnumerable<Candidate> Candidates {get; set;}
     }
 }

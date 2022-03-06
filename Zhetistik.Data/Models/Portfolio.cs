@@ -6,14 +6,13 @@ namespace Zhetistik.Data.Models
 {
     public class Portfolio
     {
-        public int PortofolioId { get; set; }
+        public int PortfolioId { get; set; }
         public int CandidateId { get; set; }
-        public int LocationId { get; set; }
+        [System.ComponentModel.DataAnnotations.Required]
         public bool IsPublished { get; set; }
         public DateTime CreatedDate { get; set; }
         [JsonIgnore]
         public Candidate Candidate { get; set; }
-        [JsonIgnore]
-        public Location Location { get; set; }
+        public IEnumerable<Achievement> Achievements {get; set;}
     }
 }

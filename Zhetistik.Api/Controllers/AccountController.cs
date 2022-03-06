@@ -50,11 +50,11 @@ namespace Zhetistik.Api.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));  
                 }  
   
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));  
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfig:Key"]));  
   
                 var token = new JwtSecurityToken(  
-                    issuer: _configuration["Jwt:ValidIssuer"],  
-                    audience: _configuration["Jwt:ValidAudience"],  
+                    issuer: _configuration["JwtConfig:ValidIssuer"],  
+                    audience: _configuration["JwtConfig:ValidAudience"],  
                     expires: DateTime.Now.AddHours(3),  
                     claims: authClaims,  
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)  

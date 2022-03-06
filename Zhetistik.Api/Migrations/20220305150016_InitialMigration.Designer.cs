@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Zhetistik.Data.Context;
+using Zhetistik.Api.Context;
 
 #nullable disable
 
-namespace Zhetistik.Data.Migrations
+namespace Zhetistik.Api.Migrations
 {
     [DbContext(typeof(ZhetistikAppContext))]
-    [Migration("20220301193140_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220305150016_InitialMigration")]
+    partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -157,12 +157,15 @@ namespace Zhetistik.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Zhetistik.Data.Context.ZhetistikUser", b =>
+            modelBuilder.Entity("Zhetistik.Api.Context.ZhetistikUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("AccessFailedCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CandidateId")
                         .HasColumnType("int");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -219,6 +222,8 @@ namespace Zhetistik.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CandidateId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -228,6 +233,94 @@ namespace Zhetistik.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Achievement", b =>
+                {
+                    b.Property<int>("AchievementId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AchievementId"), 1L, 1);
+
+                    b.Property<string>("AchievementName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AchievementTypeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("PortfolioId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AchievementId");
+
+                    b.HasIndex("AchievementTypeId");
+
+                    b.HasIndex("PortfolioId");
+
+                    b.ToTable("Achievements");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.AchievementType", b =>
+                {
+                    b.Property<int>("AchievementTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AchievementTypeId"), 1L, 1);
+
+                    b.Property<string>("AchievementTypeName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AchievementTypeId");
+
+                    b.HasIndex("AchievementTypeName")
+                        .IsUnique();
+
+                    b.ToTable("AchievementTypes");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Candidate", b =>
+                {
+                    b.Property<int>("CandidateId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateId"), 1L, 1);
+
+                    b.Property<DateTime>("Birthday")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("GraduateYear")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LocationId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SchoolId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ZhetistikUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CandidateId");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("SchoolId");
+
+                    b.ToTable("Candidates");
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.City", b =>
@@ -286,11 +379,38 @@ namespace Zhetistik.Data.Migrations
 
                     b.HasKey("LocationId");
 
-                    b.HasIndex("CityId");
+                    b.HasIndex("CityId")
+                        .IsUnique();
 
-                    b.HasIndex("CountryId");
+                    b.HasIndex("CountryId")
+                        .IsUnique();
 
                     b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Portfolio", b =>
+                {
+                    b.Property<int>("PortfolioId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PortfolioId"), 1L, 1);
+
+                    b.Property<int>("CandidateId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsPublished")
+                        .HasColumnType("bit");
+
+                    b.HasKey("PortfolioId");
+
+                    b.HasIndex("CandidateId")
+                        .IsUnique();
+
+                    b.ToTable("Portfolios");
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.School", b =>
@@ -336,7 +456,7 @@ namespace Zhetistik.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -345,7 +465,7 @@ namespace Zhetistik.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -360,7 +480,7 @@ namespace Zhetistik.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -369,11 +489,56 @@ namespace Zhetistik.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Zhetistik.Api.Context.ZhetistikUser", b =>
+                {
+                    b.HasOne("Zhetistik.Data.Models.Candidate", "Candidate")
+                        .WithMany()
+                        .HasForeignKey("CandidateId");
+
+                    b.Navigation("Candidate");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Achievement", b =>
+                {
+                    b.HasOne("Zhetistik.Data.Models.AchievementType", "AchievementType")
+                        .WithMany()
+                        .HasForeignKey("AchievementTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Zhetistik.Data.Models.Portfolio", "Portfolio")
+                        .WithMany("Achievements")
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AchievementType");
+
+                    b.Navigation("Portfolio");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Candidate", b =>
+                {
+                    b.HasOne("Zhetistik.Data.Models.Location", "Location")
+                        .WithMany()
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Zhetistik.Data.Models.School", "School")
+                        .WithMany("Candidates")
+                        .HasForeignKey("SchoolId");
+
+                    b.Navigation("Location");
+
+                    b.Navigation("School");
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.Location", b =>
@@ -395,6 +560,17 @@ namespace Zhetistik.Data.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("Zhetistik.Data.Models.Portfolio", b =>
+                {
+                    b.HasOne("Zhetistik.Data.Models.Candidate", "Candidate")
+                        .WithOne("Portfolio")
+                        .HasForeignKey("Zhetistik.Data.Models.Portfolio", "CandidateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Candidate");
+                });
+
             modelBuilder.Entity("Zhetistik.Data.Models.School", b =>
                 {
                     b.HasOne("Zhetistik.Data.Models.Location", "Location")
@@ -404,6 +580,21 @@ namespace Zhetistik.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Location");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Candidate", b =>
+                {
+                    b.Navigation("Portfolio");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.Portfolio", b =>
+                {
+                    b.Navigation("Achievements");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.School", b =>
+                {
+                    b.Navigation("Candidates");
                 });
 #pragma warning restore 612, 618
         }
