@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Zhetistik.Api.Context;
+using Zhetistik.Data.Context;
 
 #nullable disable
 
-namespace Zhetistik.Api.Migrations
+namespace Zhetistik.Data.Migrations
 {
     [DbContext(typeof(ZhetistikAppContext))]
-    partial class ZhetistikAppContextModelSnapshot : ModelSnapshot
+    [Migration("20220310142630_CountryFix")]
+    partial class CountryFix
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -155,7 +157,7 @@ namespace Zhetistik.Api.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Zhetistik.Api.Context.ZhetistikUser", b =>
+            modelBuilder.Entity("Zhetistik.Data.Context.ZhetistikUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -380,8 +382,7 @@ namespace Zhetistik.Api.Migrations
                     b.HasIndex("CityId")
                         .IsUnique();
 
-                    b.HasIndex("CountryId")
-                        .IsUnique();
+                    b.HasIndex("CountryId");
 
                     b.ToTable("Locations");
                 });
@@ -396,9 +397,6 @@ namespace Zhetistik.Api.Migrations
 
                     b.Property<int>("CandidateId")
                         .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsPublished")
                         .HasColumnType("bit");
@@ -454,7 +452,7 @@ namespace Zhetistik.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -463,7 +461,7 @@ namespace Zhetistik.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -478,7 +476,7 @@ namespace Zhetistik.Api.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -487,14 +485,14 @@ namespace Zhetistik.Api.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("Zhetistik.Api.Context.ZhetistikUser", null)
+                    b.HasOne("Zhetistik.Data.Context.ZhetistikUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Zhetistik.Api.Context.ZhetistikUser", b =>
+            modelBuilder.Entity("Zhetistik.Data.Context.ZhetistikUser", b =>
                 {
                     b.HasOne("Zhetistik.Data.Models.Candidate", "Candidate")
                         .WithMany()

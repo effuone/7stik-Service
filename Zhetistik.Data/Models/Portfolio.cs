@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
 namespace Zhetistik.Data.Models
 {
@@ -10,7 +8,6 @@ namespace Zhetistik.Data.Models
         public int CandidateId { get; set; }
         [System.ComponentModel.DataAnnotations.Required]
         public bool IsPublished { get; set; }
-        public DateTime CreatedDate { get; set; }
         [JsonIgnore]
         public Candidate Candidate { get; set; }
         public IEnumerable<Achievement> Achievements {get; set;}

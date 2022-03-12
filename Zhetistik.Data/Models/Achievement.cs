@@ -17,8 +17,8 @@ namespace Zhetistik.Data.Models
         public string AchievementName { get; set; }
         [System.ComponentModel.DataAnnotations.Required]
         public string Description { get; set; }
-        [System.ComponentModel.DataAnnotations.Required]
-        public string ImageName { get; set; }
+        public int FileId { get; set; }
+        public FileModel FileModel {get; set;}
         public int AchievementTypeId {get; set;}
         public AchievementType AchievementType {get; set;}
     }

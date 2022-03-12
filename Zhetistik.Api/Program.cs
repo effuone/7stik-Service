@@ -4,13 +4,15 @@ global using Zhetistik.Core.Interfaces;
 global using Zhetistik.Core.Repositories;
 global using Microsoft.AspNetCore.Mvc;
 global using Zhetistik.Data.Models;
-global using Zhetistik.Api.Context;
+global using Zhetistik.Data.Context;
 global using System.ComponentModel.DataAnnotations;
+global using Zhetistik.Core.Services;
+global using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 using Microsoft.AspNetCore.Identity;
-using Zhetistik.Api;
+using Zhetistik.Data.MailAccess;
+using Zhetistik.Data.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,21 +21,35 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-var jwt = builder.Configuration.GetSection(nameof(JwtConfig)).Get<JwtConfig>().Key;
-var audience = builder.Configuration.GetSection(nameof(JwtConfig)).Get<JwtConfig>().ValidAudience;
-var issuer = builder.Configuration.GetSection(nameof(JwtConfig)).Get<JwtConfig>().ValidIssuer;
+var jwt = builder.Configuration.GetSection(nameof(Zhetistik.Api.JwtConfig)).Get<Zhetistik.Api.JwtConfig>().Key;
+var audience = builder.Configuration.GetSection(nameof(Zhetistik.Api.JwtConfig)).Get<Zhetistik.Api.JwtConfig>().ValidAudience;
+var issuer = builder.Configuration.GetSection(nameof(Zhetistik.Api.JwtConfig)).Get<Zhetistik.Api.JwtConfig>().ValidIssuer;
+var mailSettings = builder.Configuration.GetSection(nameof(MailSettings)).Get<Zhetistik.Data.MailAccess.MailSettings>();
+
+
 var connectionString = builder.Configuration.GetConnectionString("LaptopConnection");
 builder.Services.AddDbContext<ZhetistikAppContext>(options=>options.UseSqlServer(connectionString));
 builder.Services.AddIdentity<ZhetistikUser, IdentityRole>(options=>options.SignIn.RequireConfirmedAccount = true)
 .AddEntityFrameworkStores<ZhetistikAppContext>().AddDefaultTokenProviders();
+
+
 builder.Services.AddScoped<DapperContext>();
+builder.Services.AddScoped<IMailSender, MailSender>();
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<ICountryRepository, CountryRepository>();
 builder.Services.AddScoped<ILocationRepository, LocationRepository>();
+builder.Services.AddScoped<IAchievementRepository, AchievementRepository>();
 builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 
+
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
+builder.Services.AddTransient<IMailSender, MailSender>();
+
+
 builder.Services.AddSwaggerGen();
-builder.Services.AddCors();
+builder.Services.AddCors(options=>options.AddPolicy("MyPolicies", builder=>{
+    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+}));
 builder.Services.AddOptions();
 builder.Services.AddMvc(options =>
 {
@@ -75,10 +91,7 @@ else
     app.UseHsts();
 }
 app.UseRouting();
-app.UseCors(x => x
-                .AllowAnyOrigin()
-                .AllowAnyMethod()
-                .AllowAnyHeader());
+app.UseCors("MyPolicies");
 
 app.UseAuthentication();
 app.UseAuthorization();

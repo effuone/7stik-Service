@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("api/cities")]
     public class CityController : ControllerBase
     {

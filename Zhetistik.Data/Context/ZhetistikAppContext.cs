@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Configuration;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Zhetistik.Data.Models;
 
-namespace Zhetistik.Api.Context
+namespace Zhetistik.Data.Context
 {
     public class ZhetistikAppContext : IdentityDbContext<ZhetistikUser>
     {
@@ -13,7 +16,7 @@ namespace Zhetistik.Api.Context
             : base(options)
         {
         }
-
+        public DbSet<FileModel> Files {get; set;}
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Location> Locations { get; set; }
@@ -22,6 +25,10 @@ namespace Zhetistik.Api.Context
         public DbSet<Portfolio> Portfolios {get; set;}
         public DbSet<Achievement> Achievements {get; set;}
         public DbSet<AchievementType> AchievementTypes {get; set;}
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=SA;Password=");
+        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -29,7 +36,6 @@ namespace Zhetistik.Api.Context
             builder.Entity<Country>().HasIndex(x=>x.CountryName).IsUnique(true);
             builder.Entity<City>().HasIndex(x=>x.CityName).IsUnique(true);
             builder.Entity<Location>().HasIndex(x=>x.CityId).IsUnique(true);
-            builder.Entity<Location>().HasIndex(x=>x.CountryId).IsUnique(true);
             builder.Entity<School>().HasIndex(x=>x.SchoolName).IsUnique(true);
             
             //Relationship configuring 
@@ -41,6 +47,7 @@ namespace Zhetistik.Api.Context
             builder.Entity<Portfolio>().HasMany(x=>x.Achievements).WithOne(x=>x.Portfolio);
             builder.Entity<Portfolio>().HasOne(x=>x.Candidate).WithOne(x=>x.Portfolio).IsRequired();
             builder.Entity<Achievement>().HasOne(x=>x.AchievementType);
+            builder.Entity<Achievement>().HasOne(x=>x.FileModel);
             builder.Entity<AchievementType>().HasIndex(x=>x.AchievementTypeName).IsUnique(true);
         }      
     }

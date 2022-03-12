@@ -1130,3 +1130,9 @@ C:/Users/777/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Enti
 /home/effuone/Desktop/7stik-Service/Zhetistik.Api/obj/Debug/net6.0/Zhetistik.Api.pdb
 /home/effuone/Desktop/7stik-Service/Zhetistik.Api/obj/Debug/net6.0/Zhetistik.Api.genruntimeconfig.cache
 /home/effuone/Desktop/7stik-Service/Zhetistik.Api/obj/Debug/net6.0/ref/Zhetistik.Api.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/MailKit.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/MimeKit.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/BouncyCastle.Crypto.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Extensions.Configuration.EnvironmentVariables.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Extensions.Configuration.UserSecrets.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Extensions.Hosting.dll
