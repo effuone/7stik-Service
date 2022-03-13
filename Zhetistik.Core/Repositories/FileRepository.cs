@@ -1,6 +1,8 @@
+using System.Data.SqlClient;
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Http;
+using Zhetistik.Core.DataAccess;
 using Zhetistik.Core.Interfaces;
 using Zhetistik.Data.Context;
 
@@ -9,28 +11,48 @@ namespace Zhetistik.Core.Repositories
     public class FileRepository : IFileRepository
     {
         private readonly ZhetistikAppContext _context;
+        private readonly DapperContext _dapper;
 
-        public FileRepository(ZhetistikAppContext context)
+        public FileRepository(ZhetistikAppContext context, DapperContext dapper)
         {
             _context = context;
+            _dapper = dapper;
         }
 
-        public Task<bool> DeleteFileAsync(int id)
+        public async Task<bool> DeleteFileAsync(int id)
         {
-            throw new NotImplementedException();
+            var model = await _context.FileModels.FindAsync(id);
+            _context.Remove(model);
+            await _context.SaveChangesAsync();
+            return true;
         }
-
+        public async Task<FileModel> GetFileByAchievementAsync(int achievementId)
+        {
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                string sql = @"select a.FileModelId, fm.Content from Achievements as a, FileModels as fm
+where a.FileModelId = fm.Id and a.AchievementId = @id";
+                var command = new SqlCommand(sql, (SqlConnection) connection);
+                command.Parameters.Add(new SqlParameter("@id", achievementId));
+                var reader = await command.ExecuteReaderAsync();
+                var fileModel = new FileModel();
+                fileModel.Id = reader.GetInt32(0);
+                fileModel.Content = (byte[])reader.GetSqlBinary(1);
+                return fileModel;
+            }
+        }
         public async Task<FileModel> GetFileAsync(int id)
         {
-            return await _context.Files.FindAsync(id);
+            return await _context.FileModels.FindAsync(id);
         }
 
         public async Task<IEnumerable<FileModel>> GetFilesAsync()
         {
-            return await _context.Files.ToListAsync();
+            return await _context.FileModels.ToListAsync();
         }
 
-        public async Task<Tuple<int, bool>> SaveFileAsync(IFormFile uploadFile)
+        public async Task<FileModel> SaveFileAsync(IFormFile uploadFile)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -44,23 +66,18 @@ namespace Zhetistik.Core.Repositories
                         Content = memoryStream.ToArray()
                     };
 
-                    await _context.Files.AddAsync(file);
+                    await _context.FileModels.AddAsync(file);
                     await _context.SaveChangesAsync();
-                    return new Tuple<int, bool>(file.FileId, true);
+                    return file;
                 }
                 else
                 {
-                    return new Tuple<int, bool>(0, false);
+                    throw new IndexOutOfRangeException();
                 }
             }
         }
 
         public Task<bool> UpdateFileAsync(int fileId, IFormFile uploadFile)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<int> IFileRepository.SaveFileAsync(IFormFile uploadFile)
         {
             throw new NotImplementedException();
         }

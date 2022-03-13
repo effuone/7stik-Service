@@ -10,13 +10,12 @@ namespace Zhetistik.Data.Models
         public int CandidateId { get; set; }
         [System.ComponentModel.DataAnnotations.Required]
         public string ZhetistikUserId { get; set; }
-        public DateTime Birthday { get; set; }
-        public int LocationId { get; set; }
+        public DateTime? Birthday { get; set; }
+        [JsonIgnore]
         public Location Location { get; set; }
         [JsonIgnore]
         public School School {get; set;}
-        [System.ComponentModel.DataAnnotations.Required]
-        public DateTime GraduateYear {get; set;}
-        public Portfolio Portfolio { get; set; }
+        public DateTime? GraduateYear {get; set;}
+        public Portfolio Portfolio { get; set;}
     }
 }

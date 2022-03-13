@@ -5,7 +5,8 @@ namespace Zhetistik.Data.Models
     [Table("Files")]
     public class FileModel
     {
-        public int FileId { get; set; }
+        [Key]
+        public int Id { get; set; }
         public byte[] Content { get; set; }
     }
 }

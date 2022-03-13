@@ -1,4 +1,6 @@
 global using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
+using Zhetistik.Core.DataAccess;
 using Zhetistik.Core.Interfaces;
 using Zhetistik.Data.Context;
 
@@ -7,10 +9,12 @@ namespace Zhetistik.Data.Repositories
     public class PortfolioRepository : IPortfolioRepository
     {
         private readonly ZhetistikAppContext _context;
+        private readonly DapperContext _dapper;
 
-        public PortfolioRepository(ZhetistikAppContext context)
+        public PortfolioRepository(ZhetistikAppContext context, DapperContext dapper)
         {
             _context = context;
+            _dapper = dapper;
         }
 
         public async Task<int> CreateAsync(Portfolio model)
@@ -22,8 +26,8 @@ namespace Zhetistik.Data.Repositories
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var model = await _context.Portfolios.FindAsync(id);
-            var result = _context.Portfolios.Remove(model);
+            var model = await _context.Candidates.FindAsync(id);
+            var result = _context.Candidates.Remove(model);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -36,6 +40,16 @@ namespace Zhetistik.Data.Repositories
         public async Task<Portfolio> GetAsync(int id)
         {
             return await _context.Portfolios.FindAsync(id);
+        }
+
+        public async Task<Portfolio> GetPortfolioByCandidateAsync(int candidateId)
+        {
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var portfolio = (await connection.QueryAsync<Portfolio>($"SELECT* from Portfolios WHERE CandidateId = {candidateId}")).First();
+                return portfolio;
+            }
         }
 
         public async Task<bool> UpdateAsync(int id, Portfolio model)

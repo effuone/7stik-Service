@@ -16,7 +16,7 @@ namespace Zhetistik.Data.Context
             : base(options)
         {
         }
-        public DbSet<FileModel> Files {get; set;}
+        public DbSet<FileModel> FileModels {get; set;}
         public DbSet<Country> Countries { get; set; }
         public DbSet<City> Cities { get; set; }
         public DbSet<Location> Locations { get; set; }
@@ -27,7 +27,7 @@ namespace Zhetistik.Data.Context
         public DbSet<AchievementType> AchievementTypes {get; set;}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=SA;Password=");
+            optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=SA;Password=Effuone1990*");
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

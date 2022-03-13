@@ -252,9 +252,8 @@ namespace Zhetistik.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ImageName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("FileModelId")
+                        .HasColumnType("int");
 
                     b.Property<int>("PortfolioId")
                         .HasColumnType("int");
@@ -262,6 +261,8 @@ namespace Zhetistik.Data.Migrations
                     b.HasKey("AchievementId");
 
                     b.HasIndex("AchievementTypeId");
+
+                    b.HasIndex("FileModelId");
 
                     b.HasIndex("PortfolioId");
 
@@ -296,13 +297,13 @@ namespace Zhetistik.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CandidateId"), 1L, 1);
 
-                    b.Property<DateTime>("Birthday")
+                    b.Property<DateTime?>("Birthday")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("GraduateYear")
+                    b.Property<DateTime?>("GraduateYear")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<int?>("SchoolId")
@@ -359,6 +360,22 @@ namespace Zhetistik.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Countries");
+                });
+
+            modelBuilder.Entity("Zhetistik.Data.Models.FileModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<byte[]>("Content")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("FileModels");
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.Location", b =>
@@ -507,6 +524,10 @@ namespace Zhetistik.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Zhetistik.Data.Models.FileModel", "FileModel")
+                        .WithMany()
+                        .HasForeignKey("FileModelId");
+
                     b.HasOne("Zhetistik.Data.Models.Portfolio", "Portfolio")
                         .WithMany("Achievements")
                         .HasForeignKey("PortfolioId")
@@ -515,6 +536,8 @@ namespace Zhetistik.Data.Migrations
 
                     b.Navigation("AchievementType");
 
+                    b.Navigation("FileModel");
+
                     b.Navigation("Portfolio");
                 });
 
@@ -522,9 +545,7 @@ namespace Zhetistik.Data.Migrations
                 {
                     b.HasOne("Zhetistik.Data.Models.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
 
                     b.HasOne("Zhetistik.Data.Models.School", "School")
                         .WithMany("Candidates")

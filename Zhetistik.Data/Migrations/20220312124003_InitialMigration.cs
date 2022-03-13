@@ -63,6 +63,19 @@ namespace Zhetistik.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "FileModels",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Content = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FileModels", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -138,10 +151,10 @@ namespace Zhetistik.Data.Migrations
                     CandidateId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ZhetistikUserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    Birthday = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LocationId = table.Column<int>(type: "int", nullable: true),
                     SchoolId = table.Column<int>(type: "int", nullable: true),
-                    GraduateYear = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    GraduateYear = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -150,8 +163,7 @@ namespace Zhetistik.Data.Migrations
                         name: "FK_Candidates_Locations_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Locations",
-                        principalColumn: "LocationId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "LocationId");
                     table.ForeignKey(
                         name: "FK_Candidates_Schools_SchoolId",
                         column: x => x.SchoolId,
@@ -306,7 +318,7 @@ namespace Zhetistik.Data.Migrations
                     PortfolioId = table.Column<int>(type: "int", nullable: false),
                     AchievementName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ImageName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    FileModelId = table.Column<int>(type: "int", nullable: true),
                     AchievementTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -319,6 +331,11 @@ namespace Zhetistik.Data.Migrations
                         principalColumn: "AchievementTypeId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_Achievements_FileModels_FileModelId",
+                        column: x => x.FileModelId,
+                        principalTable: "FileModels",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Achievements_Portfolios_PortfolioId",
                         column: x => x.PortfolioId,
                         principalTable: "Portfolios",
@@ -330,6 +347,11 @@ namespace Zhetistik.Data.Migrations
                 name: "IX_Achievements_AchievementTypeId",
                 table: "Achievements",
                 column: "AchievementTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Achievements_FileModelId",
+                table: "Achievements",
+                column: "FileModelId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Achievements_PortfolioId",
@@ -417,8 +439,7 @@ namespace Zhetistik.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_CountryId",
                 table: "Locations",
-                column: "CountryId",
-                unique: true);
+                column: "CountryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Portfolios_CandidateId",
@@ -460,6 +481,9 @@ namespace Zhetistik.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AchievementTypes");
+
+            migrationBuilder.DropTable(
+                name: "FileModels");
 
             migrationBuilder.DropTable(
                 name: "Portfolios");
