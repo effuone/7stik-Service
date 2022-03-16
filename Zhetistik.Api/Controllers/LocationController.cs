@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Zhetistik.Data.ViewModels;
 
 namespace Zhetistik.Api.Controllers
@@ -41,6 +42,7 @@ namespace Zhetistik.Api.Controllers
             return existingModel;
         }
         [HttpPost]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<Location>> PostLocationAsync(int countryId, int cityId)
         {
             var existingCity = await _cityRepository.GetAsync(cityId);
@@ -61,6 +63,7 @@ namespace Zhetistik.Api.Controllers
              return CreatedAtAction(nameof(GetLocationAsync), new { id = model.LocationId }, model);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> UpdateLocationAsync(int id, int countryId, int cityId)
         {
             var existingModel = await _locationRepository.GetAsync(id);
@@ -72,6 +75,7 @@ namespace Zhetistik.Api.Controllers
             return NoContent();
         }
         [HttpDelete("{id}")]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> DeleteLocationAsync(int id)
         {
             var existingModel = await _locationRepository.GetAsync(id);

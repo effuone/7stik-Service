@@ -1,26 +1,10 @@
 version: '3.4'
 
 services:
-  webui:
-    image: ${DOCKER_REGISTRY-}webapi
+  zhetistik:
+    image: zhetistik
     build:
       context: .
       dockerfile: Dockerfile
-    environment:
-      - "MailSettings_Password=rustcohle2022*"
-      - "ConnectionStrings__LaptopConnection=Server=tcp:db;Database=ZhetistikDb;User=SA;Password=Effuone1990*;MultipleActiveResultSets=true"
-      - "JwtConfig_Key=eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY0NjQ4Mzk1MCwiaWF0IjoxNjQ2NDgzOTUwfQ.3fD1MslLNvdiN5Q3Vy-RSmO6AxeoIEZE7f2qA1VP6x8"
-    volumes:
-      - ~/.aspnet/https:/https:ro
     ports:
-      - "8080:8080"
-      - "9090:9090"
-    depends_on:
-      - db
-    restart: on-failure
-
-  db:
-    image: "mcr.microsoft.com/mssql/server"
-    environment:
-      - "SA_PASSWORD=Effuone1990*"
-      - "ACCEPT_EULA=Y"
+      - 80

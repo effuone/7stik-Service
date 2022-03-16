@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Zhetistik.Data.Roles;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -20,12 +19,16 @@ namespace Zhetistik.Api.Controllers
             _logger = logger;
             _candidateRepository = candidateRepository;
         }
-        // [HttpPost]
-        // [Authorize(Roles = "Admin")]
-        // public async Task<ActionResult> AddRoleAsync(string role)
-        // {
-        //     if (!await _roleManager.RoleExistsAsync(UserRole.Admin))  
-        //     await _roleManager.CreateAsync(new IdentityRole(UserRole.Admin)); 
-        // }
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> AddRoleAsync(string role)
+        {
+            if (await _roleManager.RoleExistsAsync(role))
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable, new Response{Status = "Error", Message=$"Role of {role} already exists"});
+            }
+            await _roleManager.CreateAsync(new IdentityRole(role)); 
+            return StatusCode(StatusCodes.Status202Accepted, new Response{Status = "Success", Message=$"Successfully created role of {role}"});
+        }
     }
 }

@@ -15,6 +15,7 @@ namespace Zhetistik.Api.Controllers
             _logger = logger;
         }
         [HttpGet]
+        [Authorize(Roles ="Admin")]
         public async Task<IEnumerable<Portfolio>> GetPortfoliosAsync()
         {
             return await _portfolioRepository.GetAllAsync();
