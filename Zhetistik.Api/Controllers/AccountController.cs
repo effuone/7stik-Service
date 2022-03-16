@@ -75,7 +75,7 @@ namespace Zhetistik.Api.Controllers
             }  
             return Unauthorized();  
         }
-        [AllowAnonymous]
+        [AllowAnonymous]                                
         [HttpPost("register")]
         public async Task<ActionResult> RegisterAsync([FromBody] RegisterModelType registerModel)
         {

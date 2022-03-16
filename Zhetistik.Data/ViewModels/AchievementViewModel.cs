@@ -1,15 +1,16 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Http;
+using Zhetistik.Data.Models;
 
 namespace Zhetistik.Data.ViewModels
 {
     public class AchievementViewModel
     {
         public int AchievementId { get; set; }
-        public int AchievementTypeId { get; set; }
+        public string AchievementTypeName { get; set; }
         public string AchievementName { get; set; }
         public string Description { get; set; }
-        public int FileId { get; set; }
+        public FileModel FileModel { get; set; }
     }
     public class CreateAchievementViewModel
     {

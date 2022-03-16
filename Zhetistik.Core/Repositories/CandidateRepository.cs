@@ -1,7 +1,9 @@
 global using Dapper;
+using System.Data.SqlClient;
 using Zhetistik.Core.DataAccess;
 using Zhetistik.Core.Interfaces;
 using Zhetistik.Data.Context;
+using Zhetistik.Data.ViewModels;
 
 namespace Zhetistik.Core.Repositories
 {
@@ -92,6 +94,66 @@ namespace Zhetistik.Core.Repositories
             return await _context.Candidates.FindAsync(existingPortfolio.CandidateId);
         }
 
+        public async Task<CandidateViewModel> GetCandidateViewModelAsync(int candidateId)
+        {
+            using(var connection = _dapper.CreateConnection())
+            {
+                var candidateViewModel = new CandidateViewModel();
+                connection.Open();
+                {
+                    string sql = 
+                                @"select candidates.CandidateId, users.FirstName, users.LastName, candidates.Birthday, locations.LocationId, countries.CountryName, cities.CityName, candidates.GraduateYear
+                    from Candidates as candidates, AspNetUsers as users, Schools as schools, Locations as locations, Countries as countries, Cities as cities
+                    where candidates.ZhetistikUserId = users.Id
+                    and locations.LocationId = candidates.LocationId
+                    and locations.CountryId = countries.CountryId
+                    and locations.CityId = cities.CityId
+                    and candidates.CandidateId = @id";
+                    var command = new SqlCommand(sql, (SqlConnection)connection);
+                    command.Parameters.Add(new SqlParameter("@id", candidateId));
+                    var reader = await command.ExecuteReaderAsync();
+                    if(reader.HasRows is false)
+                    {
+                        return null;
+                    }
+                    await reader.ReadAsync();
+                    candidateViewModel.CandidateId = candidateId;
+                    candidateViewModel.FirstName = reader.GetString(1);
+                    candidateViewModel.LastName = reader.GetString(2);
+                    candidateViewModel.Birthday = Convert.IsDBNull(reader.GetDateTime(3)) is false ? reader.GetDateTime(3) : DateTime.MinValue;
+                    candidateViewModel.Location = new LocationViewModel{ LocationId = reader.GetInt32(4), CountryName = reader.GetString(5), CityName = reader.GetString(6)};
+                    candidateViewModel.GraduateYear = reader.GetDateTime(7);
+                    connection.Close();
+                }
+                {
+                    connection.Open();
+                    string sql = 
+                                        @"select schools.Schoolname, schools.FoundationYear, locations.LocationId, countries.CountryName, cities.CityName FROM
+                    Schools as schools, Countries as countries, Cities as cities, Locations as locations, Candidates as candidates
+                    where countries.CountryId = locations.CountryId and locations.CityId = locations.CityId 
+                    and schools.LocationId = locations.LocationId
+                    and candidates.SchoolId = schools.SchoolId
+                    and candidates.CandidateId = @id";
+                    var command = new SqlCommand(sql, (SqlConnection) connection);
+                    command.Parameters.Add(new SqlParameter("@id", candidateId));
+                    var reader = await command.ExecuteReaderAsync();
+                    if(reader.HasRows is false)
+                    {
+                        candidateViewModel.School = null;
+                    }
+
+                    await reader.ReadAsync();
+                    var schoolViewModel = new SchoolViewModel();
+                    schoolViewModel.SchoolName =  reader.GetString(0);
+                    schoolViewModel.FoundationYear =  reader.GetDateTime(1);
+                    schoolViewModel.Location = new LocationViewModel{LocationId = reader.GetInt32(2), CountryName = reader.GetString(3), CityName = reader.GetString(4)};
+                    candidateViewModel.School = schoolViewModel;
+                    connection.Close();
+                }
+                return candidateViewModel;
+            }
+        }
+        
         public async Task<bool> UpdateAsync(int id, Candidate model)
         {
             var existingModel = await _context.Candidates.FindAsync(id);

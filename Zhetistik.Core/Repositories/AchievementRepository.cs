@@ -3,6 +3,7 @@ using System.Data.SqlClient;
 using Zhetistik.Core.DataAccess;
 using Zhetistik.Core.Interfaces;
 using Zhetistik.Data.Context;
+using Zhetistik.Data.ViewModels;
 
 namespace Zhetistik.Data.Repositories
 {
@@ -30,6 +31,44 @@ namespace Zhetistik.Data.Repositories
             var result = _context.Achievements.Remove(model);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<AchievementViewModel>> GetAchievementsByCandidateAsync(int candidateId)
+        {
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                 string sql = 
+                            @"select achievements.AchievementId, achievements.AchievementName, achievementTypes.[AchievementTypeName], achievements.[Description], achievements.FileModelId
+                from Achievements as achievements, AchievementTypes as achievementTypes, Candidates as candidates, Portfolios as portfolios
+                where achievements.PortfolioId = portfolios.PortfolioId 
+                and achievementTypes.AchievementTypeId = achievements.AchievementTypeId
+                and portfolios.CandidateId = candidates.CandidateId
+                and candidates.CandidateId = @id;";
+
+                var command = new SqlCommand(sql, (SqlConnection)connection);
+                command.Parameters.Add(new SqlParameter("@id", candidateId));
+                var reader = await command.ExecuteReaderAsync();
+                var list = new List<AchievementViewModel>();
+                if(reader.HasRows)
+                {
+                    while(await reader.ReadAsync())
+                    {
+                        var achievement = new Zhetistik.Data.ViewModels.AchievementViewModel();
+                        achievement.AchievementId = reader.GetInt32(0);
+                        achievement.AchievementName = reader.GetString(1);
+                        achievement.AchievementTypeName = reader.GetString(2);
+                        achievement.Description = reader.GetString(3);
+                        if(await reader.IsDBNullAsync(4) is false)
+                        {
+                            achievement.FileModel = new FileModel { Id = achievement.AchievementId};
+                        }
+                        list.Add(achievement);
+                    } 
+                }                    
+                connection.Close();
+                return list;
+            }  
         }
 
         public async Task<IEnumerable<Achievement>> GetAchievementsByPortfolioAsync(int portfolioId)

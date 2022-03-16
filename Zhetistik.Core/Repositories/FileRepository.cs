@@ -12,6 +12,9 @@ namespace Zhetistik.Core.Repositories
     {
         private readonly ZhetistikAppContext _context;
         private readonly DapperContext _dapper;
+        private const string _achievementFolder = "/AchievementFiles";
+        private const string _candidateFolder = "/CandidatePhotos";
+        private const string _schoolFolder = "/SchoolPhotos";
 
         public FileRepository(ZhetistikAppContext context, DapperContext dapper)
         {
@@ -31,14 +34,8 @@ namespace Zhetistik.Core.Repositories
             using(var connection = _dapper.CreateConnection())
             {
                 connection.Open();
-                string sql = @"select a.FileModelId, fm.Content from Achievements as a, FileModels as fm
-where a.FileModelId = fm.Id and a.AchievementId = @id";
-                var command = new SqlCommand(sql, (SqlConnection) connection);
-                command.Parameters.Add(new SqlParameter("@id", achievementId));
-                var reader = await command.ExecuteReaderAsync();
-                var fileModel = new FileModel();
-                fileModel.Id = reader.GetInt32(0);
-                fileModel.Content = (byte[])reader.GetSqlBinary(1);
+                var fileModel = await connection.QueryFirstAsync<FileModel>(@$"select fm.Id, fm.Content from FileModels as fm, Achievements as ac
+                where ac.FileModelId = fm.Id and ac.AchievementId = {achievementId}");
                 return fileModel;
             }
         }

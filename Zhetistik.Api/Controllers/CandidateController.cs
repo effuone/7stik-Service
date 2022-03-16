@@ -30,104 +30,39 @@ namespace Zhetistik.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Candidate>> GetCandidatesAsync()
-        {
-            var candidates = await _candidateRepository.GetAllAsync();
-            foreach(var candidate in candidates)
-            {
-                candidate.Portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidate.CandidateId);
-                var achievements = await _achievementRepository.GetAchievementsByPortfolioAsync(candidate.Portfolio.PortfolioId);
-                foreach(var achievement in achievements)
-                {
-                    achievement.FileModel = await _fileRepository.GetFileByAchievementAsync(achievement.AchievementId);
-                }
-                candidate.Portfolio.Achievements = achievements;
-            }
-            return candidates;
-        }
-        [HttpGet("vm")]
         public async Task<IEnumerable<CandidateViewModel>> GetCandidateViewModelsAsync()
         {
+            var candidates = await _candidateRepository.GetAllAsync();
             var list = new List<CandidateViewModel>();
-            var candidates =  await _candidateRepository.GetAllAsync();
-            foreach(var existingModel in candidates)
+            foreach(var candidate in candidates)
             {
-                var user = await _userManager.FindByIdAsync(existingModel.ZhetistikUserId);
-                var candidateViewModel = new CandidateViewModel();
-                var schoolViewModel = new SchoolViewModel();
-                var schoolLocationViewModel = new LocationViewModel();
-                var candidateLocationViewModel = new LocationViewModel();
-
-                schoolLocationViewModel.CityName = existingModel.School.Location.City.CityName;
-                schoolLocationViewModel.CountryName = existingModel.School.Location.Country.CountryName;
-                schoolLocationViewModel.LocationId = existingModel.School.LocationId;
-
-                candidateLocationViewModel.CityName = existingModel.Location.City.CityName;
-                candidateLocationViewModel.CountryName = existingModel.Location.Country.CountryName;
-                candidateLocationViewModel.LocationId = existingModel.Location.LocationId;
-
-                schoolViewModel.FoundationYear = existingModel.School.FoundationYear;
-                schoolViewModel.SchoolName = existingModel.School.SchoolName;
-                schoolViewModel.Location = schoolLocationViewModel;
-
-                candidateViewModel.Birthday = (DateTime)existingModel.Birthday;
-                candidateViewModel.FirstName = user.FirstName;
-                candidateViewModel.LastName = user.LastName;
-                candidateViewModel.GraduateYear = (DateTime)existingModel.GraduateYear;
-                candidateViewModel.School = schoolViewModel;
-                candidateViewModel.Location = candidateLocationViewModel;
-
+                var model = await _candidateRepository.GetCandidateViewModelAsync(candidate.CandidateId);
+                var portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidate.CandidateId);
+                var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidate.CandidateId);
                 var portfolioViewModel = new PortfolioViewModel();
-                var existingPortfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(existingModel.CandidateId);
-                foreach(var achievement in existingPortfolio.Achievements)
-                {
-                    var achievementViewModel = new AchievementViewModel();
-                    achievementViewModel.AchievementName = achievement.AchievementName;
-                    achievementViewModel.AchievementTypeId = achievement.AchievementTypeId;
-                    achievementViewModel.FileId = achievement.FileModel.Id;
-                    achievementViewModel.Description = achievement.Description;
-                    portfolioViewModel.Achievements.Append(achievementViewModel);
-                }
-                portfolioViewModel.IsPublished = existingPortfolio.IsPublished;
-                portfolioViewModel.PortfolioId = existingPortfolio.PortfolioId;
-                candidateViewModel.PortfolioViewModel = portfolioViewModel;
-                list.Add(candidateViewModel); 
+                portfolioViewModel.PortfolioId = portfolio.PortfolioId;
+                portfolioViewModel.IsPublished = portfolio.IsPublished;
+                portfolioViewModel.Achievements = achievements;
+                model.PortfolioViewModel = portfolioViewModel;
+                list.Add(model);
             }
             return list;
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<CandidateViewModel>> GetCandidateAsync(int id)
         {
-            var existingModel = await _candidateRepository.GetAsync(id);
-            if(existingModel is null)
+            var candidateViewModel = await _candidateRepository.GetCandidateViewModelAsync(id);
+            if(candidateViewModel is null)
             {
                 return NotFound();
             }
-            //Init
-            var user = await _userManager.FindByIdAsync(existingModel.ZhetistikUserId);
-            var candidateViewModel = new CandidateViewModel();
-            var schoolViewModel = new SchoolViewModel();
-            var schoolLocationViewModel = new LocationViewModel();
-            var candidateLocationViewModel = new LocationViewModel();
-
-            schoolLocationViewModel.CityName = existingModel.School.Location.City.CityName;
-            schoolLocationViewModel.CountryName = existingModel.School.Location.Country.CountryName;
-            schoolLocationViewModel.LocationId = existingModel.School.LocationId;
-
-            candidateLocationViewModel.CityName = existingModel.Location.City.CityName;
-            candidateLocationViewModel.CountryName = existingModel.Location.Country.CountryName;
-            candidateLocationViewModel.LocationId = existingModel.Location.LocationId;
-
-            schoolViewModel.FoundationYear = existingModel.School.FoundationYear;
-            schoolViewModel.SchoolName = existingModel.School.SchoolName;
-            schoolViewModel.Location = schoolLocationViewModel;
-
-            candidateViewModel.Birthday = (DateTime)existingModel.Birthday;
-            candidateViewModel.FirstName = user.FirstName;
-            candidateViewModel.LastName = user.LastName;
-            candidateViewModel.GraduateYear = (DateTime)existingModel.GraduateYear;
-            candidateViewModel.School = schoolViewModel;
-            candidateViewModel.Location = candidateLocationViewModel;
+            var portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidateViewModel.CandidateId);
+            var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidateViewModel.CandidateId);
+            var portfolioViewModel = new PortfolioViewModel();
+            portfolioViewModel.PortfolioId = portfolio.PortfolioId;
+            portfolioViewModel.IsPublished = portfolio.IsPublished;
+            portfolioViewModel.Achievements = achievements;
+            candidateViewModel.PortfolioViewModel = portfolioViewModel;
             return candidateViewModel;
         }
         [HttpPost]
@@ -139,11 +74,6 @@ namespace Zhetistik.Api.Controllers
             {
                 return NotFound();
             }
-            // var existingCandidate = _candidateRepository.GetAsync(candidateViewModel.ZhetistikUserId);
-            // if(existingCandidate is not null)
-            // {
-            //     return StatusCode(StatusCodes.Status409Conflict, new Response { Status = "Error", Message = "Candidate creation failed! Candidate already exists" });  
-            // }
             model.ZhetistikUserId = candidateViewModel.ZhetistikUserId;
             model.Portfolio = new Portfolio();
             await _candidateRepository.CreateAsync(model);

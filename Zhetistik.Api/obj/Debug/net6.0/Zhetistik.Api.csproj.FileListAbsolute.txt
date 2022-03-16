@@ -1136,3 +1136,5 @@ C:/Users/777/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Enti
 /home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Extensions.Configuration.EnvironmentVariables.dll
 /home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Extensions.Configuration.UserSecrets.dll
 /home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Microsoft.Extensions.Hosting.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Npgsql.dll
+/home/effuone/Desktop/7stik-Service/Zhetistik.Api/bin/Debug/net6.0/Npgsql.EntityFrameworkCore.PostgreSQL.dll

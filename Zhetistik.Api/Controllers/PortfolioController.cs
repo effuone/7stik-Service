@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
@@ -22,6 +24,7 @@ namespace Zhetistik.Api.Controllers
         {
             return await _portfolioRepository.GetAsync(portfolioId);
         }
+        [Authorize(Roles = "Candidate")]
         [HttpGet("candidate/")]
         public async Task<ActionResult<Portfolio>> GetPortfolioByCandidateAsync(int candidateId)
         {

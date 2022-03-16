@@ -27,7 +27,8 @@ namespace Zhetistik.Data.Context
         public DbSet<AchievementType> AchievementTypes {get; set;}
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=SA;Password=Effuone1990*");
+            optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=SA;Password=");
+            // optionsBuilder.UseNpgsql("Host=postgres;Database=blog_database;Username=docker_user;Password=password");
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

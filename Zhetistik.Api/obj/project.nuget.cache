@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "OIsAGykm+i2XnyQobzlmkzJeKumfuQZobDHc8z/PeIfZCD1LbbN2V3FSOJndysbIb/j977IsYP9u+U1KkdlNEQ==",
+  "dgSpecHash": "v3HjwoXiMmE69eYCOATSlC282nCdGKNXznG6H8uv4ManMYdIzQQbSRGtT30oAgdA7xdy6I8mj7wlMSMaiF5Haw==",
   "success": true,
   "projectFilePath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Api/Zhetistik.Api.csproj",
   "expectedPackageFiles": [
@@ -104,6 +104,8 @@
     "/home/effuone/.nuget/packages/mimekit/3.1.1/mimekit.3.1.1.nupkg.sha512",
     "/home/effuone/.nuget/packages/netstandard.library/1.6.1/netstandard.library.1.6.1.nupkg.sha512",
     "/home/effuone/.nuget/packages/newtonsoft.json/13.0.1/newtonsoft.json.13.0.1.nupkg.sha512",
+    "/home/effuone/.nuget/packages/npgsql/6.0.3/npgsql.6.0.3.nupkg.sha512",
+    "/home/effuone/.nuget/packages/npgsql.entityframeworkcore.postgresql/6.0.3/npgsql.entityframeworkcore.postgresql.6.0.3.nupkg.sha512",
     "/home/effuone/.nuget/packages/nuget.common/5.11.0/nuget.common.5.11.0.nupkg.sha512",
     "/home/effuone/.nuget/packages/nuget.configuration/5.11.0/nuget.configuration.5.11.0.nupkg.sha512",
     "/home/effuone/.nuget/packages/nuget.dependencyresolver.core/5.11.0/nuget.dependencyresolver.core.5.11.0.nupkg.sha512",

@@ -27,8 +27,8 @@ namespace Zhetistik.Api.Controllers
         [HttpGet]
         public async Task<ActionResult<FileModel>> GetFileByAchievementAsync(int id)
         {
-            var model = await _fileRepository.GetFileByAchievementAsync(id);
-            return model;
+            var fileModel = await _fileRepository.GetFileByAchievementAsync(id);
+            return fileModel;
         }
     }
 }

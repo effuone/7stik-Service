@@ -15,5 +15,15 @@ namespace Zhetistik.Data.Models
         public City City { get; set; }
         [JsonIgnore]
         public Country Country { get; set; }
+        public Location()
+        {
+            
+        }
+        public Location(int locationId, int countryId, int cityId)
+        {
+            LocationId = locationId;
+            CountryId = countryId;
+            CityId = cityId;
+        }
     }
 }

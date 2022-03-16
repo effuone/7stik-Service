@@ -1,9 +1,3 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.StaticFiles;
-using Microsoft.Net.Http.Headers;
 using Zhetistik.Data.ViewModels;
 
 namespace Zhetistik.Api.Controllers
@@ -43,9 +37,9 @@ namespace Zhetistik.Api.Controllers
             return existingAchievement;
         }
         [HttpGet("portfolio")]
-        public async Task<IEnumerable<Achievement>> GetAchievementsByPortfolioAsync(int portfolioId)
+        public async Task<IEnumerable<AchievementViewModel>> GetAchievementsByCandidateAsync(int candidateId)
         {
-            var achievements = await _achievementRepository.GetAchievementsByPortfolioAsync(portfolioId);
+            var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidateId);
             return achievements;
         }
         [HttpPost]
@@ -59,29 +53,14 @@ namespace Zhetistik.Api.Controllers
             var achievement = new Achievement();
             achievement.AchievementName = achievementViewModel.AchievementName;
             achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
-            achievement.FileModel = await _fileRepository.SaveFileAsync(achievementViewModel.File);
+            if(achievementViewModel.File is not null)
+            {
+                achievement.FileModel = await _fileRepository.SaveFileAsync(achievementViewModel.File);
+            }
             achievement.Description = achievementViewModel.Description;
             achievement.PortfolioId = portfolioId;
             await _achievementRepository.CreateAsync(achievement);
             return CreatedAtAction(nameof(GetAchievementAsync), new { id = achievement.AchievementId }, achievement);
-            // var achievement = new Achievement();
-            // achievement.AchievementName = achievementViewModel.AchievementName;
-            // achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
-            // if (achievementViewModel.File != null)
-            // {
-            //     var uploadedFile = achievementViewModel.File;
-            //     // путь к папке Files
-            //     string path = "/AchievementFiles/" + uploadedFile.FileName;
-            //     // сохраняем файл в папку Files в каталоге wwwroot
-            //     using (var fileStream = new FileStream(_env.WebRootPath + path, FileMode.Create))
-            //     {
-            //         await uploadedFile.CopyToAsync(fileStream);
-            //     }
-            //     FileModel file = new FileModel { FileName = uploadedFile.FileName, FilePath = path};
-            // }
-            // achievement.PortfolioId = portfolioId;
-            // await _achievementRepository.CreateAsync(achievement);
-            // return CreatedAtAction(nameof(GetAchievementAsync), new { id = achievement.AchievementId }, achievement);
         }
     }
 }
