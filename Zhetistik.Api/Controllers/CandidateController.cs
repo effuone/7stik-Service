@@ -30,6 +30,7 @@ namespace Zhetistik.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<CandidateViewModel>> GetCandidateViewModelsAsync()
         {
             var candidates = await _candidateRepository.GetAllAsync();
@@ -49,6 +50,7 @@ namespace Zhetistik.Api.Controllers
             return list;
         }
         [HttpGet("{id}")]
+        [Authorize(Roles = "Candidate")]
         public async Task<ActionResult<CandidateViewModel>> GetCandidateAsync(int id)
         {
             var candidateViewModel = await _candidateRepository.GetCandidateViewModelAsync(id);
@@ -66,6 +68,7 @@ namespace Zhetistik.Api.Controllers
             return candidateViewModel;
         }
         [HttpPost]
+        [Authorize(Roles = "User")]
         public async Task<ActionResult<Candidate>> PostCandidateAsync(CreateCandidateViewModel candidateViewModel)
         {
             var model = new Candidate();
@@ -80,6 +83,7 @@ namespace Zhetistik.Api.Controllers
             return CreatedAtAction(nameof(GetCandidateAsync), new { id = model.CandidateId }, model);
         }
         [HttpPut("locations/")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddLocationAsync(int candidateId, int locationId)
         {
             var existingLocation = await _locationRepository.GetAsync(locationId);
@@ -92,6 +96,7 @@ namespace Zhetistik.Api.Controllers
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
         }
         [HttpPut("birthdate/")]
+        [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddBirthdateAsync(int candidateId, int year, int month, int day)
         {
             var birthdate = new DateTime(year, month, day);
@@ -104,6 +109,7 @@ namespace Zhetistik.Api.Controllers
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
         }
         [HttpPut("school/")]
+        [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddSchoolAsync(int candidateId, int schoolId, int graduateYear)
         {
             var graduateDate = new DateTime(graduateYear, 5, 25);
@@ -117,6 +123,7 @@ namespace Zhetistik.Api.Controllers
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
         }
         [HttpPut("portfolio/")]
+        [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddAchievementAsync(int candidateId, [FromForm]CreateAchievementViewModel achievementViewModel)
         {
             var existingCandidate = await _candidateRepository.GetAsync(candidateId);
@@ -132,6 +139,18 @@ namespace Zhetistik.Api.Controllers
             achievement.PortfolioId = (await _portfolioRepository.GetPortfolioByCandidateAsync(candidateId)).PortfolioId;
             await _achievementRepository.CreateAsync(achievement);
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added achievement to candidate {candidateId}"});
-        } 
+        }
+        [HttpDelete("candidate/")]
+        [Authorize(Roles = "Admin, Candidate")]
+        public async Task<ActionResult> DeleteCandidateAsync(int id)
+        {
+            var existingCandidate = await _candidateRepository.GetAsync(id);
+            if(existingCandidate is null) 
+            {
+                return NotFound();
+            }
+            await _candidateRepository.DeleteAsync(id);
+            return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Deleted candidate {id}"});
+        }
     }
 }

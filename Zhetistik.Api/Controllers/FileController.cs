@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Authorization;
+
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
@@ -13,6 +15,7 @@ namespace Zhetistik.Api.Controllers
             _logger = logger;
         }
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<FileModel>> GetFileModelsAsync()
         {
             return await _fileRepository.GetFilesAsync();

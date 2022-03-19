@@ -100,7 +100,7 @@ namespace Zhetistik.Api.Controllers
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var request = new MailRequest();
                     var callbackUrl = Url.Action(
-                        "ConfirmEmail",
+                        "ConfirmEmailAsync",
                         "Account",
                         new { userId = user.Id, code = code },
                         protocol: HttpContext.Request.Scheme);
@@ -122,7 +122,7 @@ namespace Zhetistik.Api.Controllers
         }
         [HttpPost("confirmEmail")]
         [AllowAnonymous]
-        public async Task<ActionResult> ConfirmEmail(string userId, string code)
+        public async Task<ActionResult> ConfirmEmailAsync(string userId, string code)
         {
             if (userId == null || code == null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
@@ -134,6 +134,52 @@ namespace Zhetistik.Api.Controllers
                 return Ok(new Response { Status = "Success", Message = "Email confirmed successfully!" });
             else
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+        }
+        [HttpPost("forgotPassword")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ForgotPasswordAsync(ForgotPasswordModelType forgotPasswordModelType)
+        {
+            var user = await _userManager.FindByEmailAsync(forgotPasswordModelType.Email);
+            if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+            {
+                // пользователь с данным email может отсутствовать в бд
+                // тем не менее мы выводим стандартное сообщение, чтобы скрыть 
+                // наличие или отсутствие пользователя в бд
+                return StatusCode(StatusCodes.Status200OK, new Response {Status = "Sent", Message=$"the request to restore the account was sent to the mail {forgotPasswordModelType.Email}"});
+            }
+            var code = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var request = new MailRequest();
+            var form = new ResetPasswordModelType();
+            form.Email = forgotPasswordModelType.Email;
+            var callbackUrl = Url.Action("ResetPasswordAsync","Account",new { userId = user.Id, code = code },protocol: HttpContext.Request.Scheme);
+            request.Subject = "7stik email confirmation!";
+            request.Body = 
+            @"<form action='/action_page.php'>
+  <label for='pword'>Password:</label><br>
+  <input type='password' id='fname' name='pword' value='John'><br>
+  <label for='confirmP'>Confirm Password:</label><br>
+  <input type='password' id='lname' name='lname' value='Doe'><br><br>
+  <input type='submit' value='Submit'>
+</form>";
+            request.ToEmail = forgotPasswordModelType.Email;
+            await _mailSender.SendEmailAsync(request);
+            return StatusCode(StatusCodes.Status200OK, new Response {Status = "Sent", Message=$"the request to restore the account was sent to the mail {forgotPasswordModelType.Email}"});
+        }
+        [HttpPost("reset")]
+        [AllowAnonymous]
+        public async Task<ActionResult> ResetPassworAsync(ResetPasswordModelType model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response {Status = "Error", Message=$"User not found"});
+            }
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded!)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+            }
+            return StatusCode(StatusCodes.Status200OK, new Response {Status = "Sent", Message=$"the request to restore the account was sent to the mail {model.Email}"});
         }
         [HttpPost]
         [Authorize(Roles = "Admin")]  
@@ -153,6 +199,7 @@ namespace Zhetistik.Api.Controllers
                 LastName = model.LastName,
                 PhoneNumber = model.PhoneNumber  
             };  
+            await _userManager.AddToRoleAsync(user, "Admin");
             var result = await _userManager.CreateAsync(user, model.Password);  
             if (!result.Succeeded)  
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
@@ -168,6 +215,18 @@ namespace Zhetistik.Api.Controllers
             }  
   
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });  
-        }  
+        }
+        [HttpPost("roles")]
+        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> AddRoleAsync(string role)
+        {
+            if (await _roleManager.RoleExistsAsync(role))
+            {
+                return StatusCode(StatusCodes.Status406NotAcceptable, new Response{Status = "Error", Message=$"Role of {role} already exists"});
+            }
+            await _roleManager.CreateAsync(new IdentityRole(role)); 
+            return StatusCode(StatusCodes.Status202Accepted, new Response{Status = "Success", Message=$"Successfully created role of {role}"});
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Zhetistik.Data.ViewModels;
 
 namespace Zhetistik.Api.Controllers
@@ -20,8 +21,9 @@ namespace Zhetistik.Api.Controllers
             _env = env;
             _logger = logger;
         }
-
+        
         [HttpGet]
+        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<Achievement>> GetAchievementsAsync()
         {
             return await _achievementRepository.GetAllAsync();

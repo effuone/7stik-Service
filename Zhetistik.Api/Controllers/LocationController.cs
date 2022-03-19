@@ -4,6 +4,7 @@ using Zhetistik.Data.ViewModels;
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "Admin")]
     [Route("api/locations")]
     public class LocationController : ControllerBase
     {

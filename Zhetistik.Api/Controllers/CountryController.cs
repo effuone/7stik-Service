@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
+    [Authorize(Roles = "Admin")]
     [Route("api/countries")]
     public class CountryController : ControllerBase
     {

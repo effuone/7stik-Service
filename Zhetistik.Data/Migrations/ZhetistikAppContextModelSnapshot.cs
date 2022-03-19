@@ -373,6 +373,12 @@ namespace Zhetistik.Data.Migrations
                     b.Property<byte[]>("Content")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("FileModels");

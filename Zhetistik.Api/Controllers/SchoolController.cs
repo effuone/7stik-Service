@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Zhetistik.Data.ViewModels;
 namespace Zhetistik.Api.Controllers
 {
@@ -34,6 +35,7 @@ namespace Zhetistik.Api.Controllers
             return existingModel;
         }
         [HttpPost]
+        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<School>> PostSchoolAsync(CreateSchoolViewModel schoolViewModel)
         {
             var existingLocation = await _locationRepository.GetAsync(schoolViewModel.LocationId);
@@ -55,6 +57,7 @@ namespace Zhetistik.Api.Controllers
              return CreatedAtAction(nameof(GetSchoolAsync), new { id = model.SchoolId }, model);
         }
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateSchoolAsync(int id, UpdateSchoolViewModel schoolViewModel)
         {
             var existingModel = await _schoolRepository.GetAsync(id);
