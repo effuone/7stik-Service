@@ -28,9 +28,9 @@ namespace Zhetistik.Data.Context
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //Alibek's connection string
-            optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=hbuser;Password=");
+            // optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=hbuser;Password=");
             //Khaknazar's connection string
-            optionsBuilder.UseSqlServer("Connection");
+            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ZhetistikDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -373,3 +373,6 @@
 /home/effuone/Desktop/7stik-Service/Zhetistik.UnitTests/obj/Debug/net6.0/Zhetistik.UnitTests.pdb
 /home/effuone/Desktop/7stik-Service/Zhetistik.UnitTests/obj/Debug/net6.0/Zhetistik.UnitTests.genruntimeconfig.cache
 /home/effuone/Desktop/7stik-Service/Zhetistik.UnitTests/obj/Debug/net6.0/ref/Zhetistik.UnitTests.dll
+c:\Users\777\Desktop\7stik-Service\Zhetistik.UnitTests\obj\Debug\net6.0\Zhetistik.UnitTests.dll
+c:\Users\777\Desktop\7stik-Service\Zhetistik.UnitTests\obj\Debug\net6.0\ref\Zhetistik.UnitTests.dll
+c:\Users\777\Desktop\7stik-Service\Zhetistik.UnitTests\obj\Debug\net6.0\Zhetistik.UnitTests.pdb

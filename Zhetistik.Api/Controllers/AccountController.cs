@@ -32,10 +32,39 @@ namespace Zhetistik.Api.Controllers
             _mailSender = mailSender;
             _logger = logger;
         }
+        [HttpGet]
+        [Route("GetUserRoles")]
+        public async Task<ActionResult<UserViewModel>> GetUserClaimsByToken(string token)
+        {
+            var handler = new JwtSecurityTokenHandler();
+            SecurityToken jsonToken;
+            try
+            {
+                jsonToken = handler.ReadToken(token);
+            }
+            catch (System.Exception)
+            {
+                return NotFound("Unexisting token");
+            }
+            var tokens = jsonToken as JwtSecurityToken;
+            var userName = tokens.Claims.First(x=>x.Type=="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
+            var user =  await _userManager.FindByNameAsync(userName);
+            if(user is null)
+            {
+                return NotFound();
+            }
+            var userVm = new UserViewModel();
+            userVm.Username = user.UserName;
+            userVm.FirstName = user.FirstName;
+            userVm.LastName = user.LastName;
+            userVm.Email = user.Email;
+            userVm.PhoneNumber = user.PhoneNumber;
+            return userVm;
+        }
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public async Task<ActionResult> LoginAsync([FromBody] LoginModelType loginModel)
+        public async Task<ActionResult> LoginAsync([FromBody]LoginModelType loginModel)
         {
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
             if(user.EmailConfirmed is false)
@@ -47,8 +76,12 @@ namespace Zhetistik.Api.Controllers
                 var userRoles = await _userManager.GetRolesAsync(user);  
   
                 var authClaims = new List<Claim>  
-                {  
-                    new Claim(ClaimTypes.Name, user.UserName),  
+                {
+                    new Claim("Username", user.UserName),  
+                    new Claim("FirstName", user.FirstName),
+                    new Claim("LastName", user.LastName),
+                    new Claim("Email", user.Email),
+                    new Claim("PhoneNumber", user.PhoneNumber),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),  
                 };  
   
@@ -66,7 +99,6 @@ namespace Zhetistik.Api.Controllers
                     claims: authClaims,  
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)  
                     );  
-  
                 return Ok(new  
                 {  
                     token = new JwtSecurityTokenHandler().WriteToken(token),  
@@ -142,9 +174,6 @@ namespace Zhetistik.Api.Controllers
             var user = await _userManager.FindByEmailAsync(forgotPasswordModelType.Email);
             if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
             {
-                // пользователь с данным email может отсутствовать в бд
-                // тем не менее мы выводим стандартное сообщение, чтобы скрыть 
-                // наличие или отсутствие пользователя в бд
                 return StatusCode(StatusCodes.Status200OK, new Response {Status = "Sent", Message=$"the request to restore the account was sent to the mail {forgotPasswordModelType.Email}"});
             }
             var code = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -154,13 +183,13 @@ namespace Zhetistik.Api.Controllers
             var callbackUrl = Url.Action("ResetPasswordAsync","Account",new { userId = user.Id, code = code },protocol: HttpContext.Request.Scheme);
             request.Subject = "7stik email confirmation!";
             request.Body = 
-            @"<form action='/action_page.php'>
-  <label for='pword'>Password:</label><br>
-  <input type='password' id='fname' name='pword' value='John'><br>
-  <label for='confirmP'>Confirm Password:</label><br>
-  <input type='password' id='lname' name='lname' value='Doe'><br><br>
-  <input type='submit' value='Submit'>
-</form>";
+                        @"<form action='/action_page.php'>
+            <label for='pword'>Password:</label><br>
+            <input type='password' id='fname' name='pword' value='John'><br>
+            <label for='confirmP'>Confirm Password:</label><br>
+            <input type='password' id='lname' name='lname' value='Doe'><br><br>
+            <input type='submit' value='Submit'>
+            </form>";
             request.ToEmail = forgotPasswordModelType.Email;
             await _mailSender.SendEmailAsync(request);
             return StatusCode(StatusCodes.Status200OK, new Response {Status = "Sent", Message=$"the request to restore the account was sent to the mail {forgotPasswordModelType.Email}"});
