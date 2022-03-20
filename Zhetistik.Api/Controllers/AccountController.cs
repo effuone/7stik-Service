@@ -81,7 +81,7 @@ namespace Zhetistik.Api.Controllers
                 var roleClaims = new List<Claim>();
                 for (int i = 0; i < userRoles.Count; i++)
                 {
-                    var claim = new Claim($"Role {i+1}", userRoles[i]);
+                    var claim = new Claim($"Role", userRoles[i]);
                     roleClaims.Add(claim);
                 }
                 var authClaims = new List<Claim>  
