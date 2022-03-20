@@ -67,6 +67,10 @@ namespace Zhetistik.Api.Controllers
         public async Task<ActionResult> LoginAsync([FromBody]LoginModelType loginModel)
         {
             var user = await _userManager.FindByEmailAsync(loginModel.Email);
+            if(user is null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response { Status = "Error", Message = "Wrong password or email" });
+            }
             if(user.EmailConfirmed is false)
             {
                 return StatusCode(StatusCodes.Status401Unauthorized, new Response { Status = "Error", Message = "Confirm your email first" });   
@@ -74,21 +78,22 @@ namespace Zhetistik.Api.Controllers
             if (user != null && await _userManager.CheckPasswordAsync(user, loginModel.Password))  
             {  
                 var userRoles = await _userManager.GetRolesAsync(user);  
-  
+                var roleClaims = new List<Claim>();
+                for (int i = 0; i < userRoles.Count; i++)
+                {
+                    var claim = new Claim($"Role {i+1}", userRoles[i]);
+                    roleClaims.Add(claim);
+                }
                 var authClaims = new List<Claim>  
                 {
                     new Claim("Username", user.UserName),  
                     new Claim("FirstName", user.FirstName),
                     new Claim("LastName", user.LastName),
                     new Claim("Email", user.Email),
-                    new Claim("PhoneNumber", user.PhoneNumber),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),  
-                };  
-  
-                foreach (var userRole in userRoles)  
-                {  
-                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));  
-                }  
+                    new Claim("PhoneNumber", user.PhoneNumber)
+                };
+                    authClaims.AddRange(roleClaims);
+                    authClaims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
   
                 var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtConfig:Key"]));  
   
@@ -124,10 +129,14 @@ namespace Zhetistik.Api.Controllers
                     LastName = registerModel.LastName,
                     PhoneNumber = registerModel.PhoneNumber  
                 };
-
-                var result = await _userManager.CreateAsync(user, registerModel.Password);  
+            if(await _roleManager.RoleExistsAsync(registerModel.Role) is false)
+            {
+                return NotFound("Role not found");
+            }
+            var result = await _userManager.CreateAsync(user, registerModel.Password);  
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, registerModel.Role);
                     //Email Confirmation
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var request = new MailRequest();
@@ -163,7 +172,9 @@ namespace Zhetistik.Api.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if(result.Succeeded)
+            {
                 return Ok(new Response { Status = "Success", Message = "Email confirmed successfully!" });
+            }
             else
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
         }
@@ -246,7 +257,7 @@ namespace Zhetistik.Api.Controllers
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });  
         }
         [HttpPost("roles")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         // [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddRoleAsync(string role)
         {
@@ -257,5 +268,10 @@ namespace Zhetistik.Api.Controllers
             await _roleManager.CreateAsync(new IdentityRole(role)); 
             return StatusCode(StatusCodes.Status202Accepted, new Response{Status = "Success", Message=$"Successfully created role of {role}"});
         }
+        // [HttpGet("getRoles")]
+        // public async Task<bool> GetAllRolesAsync(string role)
+        // {
+        //     return await _roleManager.RoleExistsAsync(role);
+        // }
     }
 }
