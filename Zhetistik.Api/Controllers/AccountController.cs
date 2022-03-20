@@ -1,12 +1,11 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Zhetistik.Data.AuthModels;
-using Zhetistik.Data.MailAccess;
 using Zhetistik.Data.Roles;
+using Zhetistik.Data.MailAccess;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -16,50 +15,28 @@ namespace Zhetistik.Api.Controllers
     {
         private readonly ZhetistikAppContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ICandidateRepository _candidateRepository;
         private readonly UserManager<ZhetistikUser> _userManager;
         private readonly SignInManager<ZhetistikUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IMailSender _mailSender;
         private readonly ILogger<AccountController> _logger;
+        
+        private async Task<IEnumerable<string>> GetUsersRoleAsync(ZhetistikUser user)
+        {
+            return await _userManager.GetRolesAsync(user);
+        }
 
-        public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
+        public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
         {
             _dbContext = dbContext;
             _roleManager = roleManager;
+            _candidateRepository = candidateRepository;
             _userManager = userManager;
             _signInManager = signInManager;
             _configuration = configuration;
             _mailSender = mailSender;
             _logger = logger;
-        }
-        [HttpGet]
-        [Route("GetUserRoles")]
-        public async Task<ActionResult<UserViewModel>> GetUserClaimsByToken(string token)
-        {
-            var handler = new JwtSecurityTokenHandler();
-            SecurityToken jsonToken;
-            try
-            {
-                jsonToken = handler.ReadToken(token);
-            }
-            catch (System.Exception)
-            {
-                return NotFound("Unexisting token");
-            }
-            var tokens = jsonToken as JwtSecurityToken;
-            var userName = tokens.Claims.First(x=>x.Type=="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name").Value;
-            var user =  await _userManager.FindByNameAsync(userName);
-            if(user is null)
-            {
-                return NotFound();
-            }
-            var userVm = new UserViewModel();
-            userVm.Username = user.UserName;
-            userVm.FirstName = user.FirstName;
-            userVm.LastName = user.LastName;
-            userVm.Email = user.Email;
-            userVm.PhoneNumber = user.PhoneNumber;
-            return userVm;
         }
 
         [AllowAnonymous]
@@ -83,9 +60,16 @@ namespace Zhetistik.Api.Controllers
                 {
                     var claim = new Claim($"Role", userRoles[i]);
                     roleClaims.Add(claim);
+                    if(userRoles[i] == "Candidate")
+                    {
+                        var candidate = await _candidateRepository.GetAsync(user.Id);
+                        var candidateClaim = new Claim("CandidateId", candidate.CandidateId.ToString());
+                        roleClaims.Add(candidateClaim);
+                    }
                 }
                 var authClaims = new List<Claim>  
                 {
+                    new Claim("Id", user.Id),
                     new Claim("Username", user.UserName),  
                     new Claim("FirstName", user.FirstName),
                     new Claim("LastName", user.LastName),
@@ -166,17 +150,23 @@ namespace Zhetistik.Api.Controllers
         public async Task<ActionResult> ConfirmEmailAsync(string userId, string code)
         {
             if (userId == null || code == null)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+            }
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
+            {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+            }
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if(result.Succeeded)
             {
-                return Ok(new Response { Status = "Success", Message = "Email confirmed successfully!" });
+                return Ok(new Response { Status = "Success", Message = user.Id });
             }
             else
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." }); 
+            }
         }
         [HttpPost("forgotPassword")]
         [AllowAnonymous]
@@ -221,52 +211,12 @@ namespace Zhetistik.Api.Controllers
             }
             return StatusCode(StatusCodes.Status200OK, new Response {Status = "Sent", Message=$"the request to restore the account was sent to the mail {model.Email}"});
         }
-        [HttpPost]
-        [Authorize(Roles = "Admin")]  
-        [Route("register-admin")]  
-        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterModelType model)  
-        {  
-            var userExists = await _userManager.FindByNameAsync(model.UserName);  
-            if (userExists != null)  
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });  
-  
-            ZhetistikUser user = new ZhetistikUser()  
-            {  
-                Email = model.Email,  
-                SecurityStamp = Guid.NewGuid().ToString(),  
-                UserName = model.UserName,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                PhoneNumber = model.PhoneNumber  
-            };  
-            await _userManager.AddToRoleAsync(user, "Admin");
-            var result = await _userManager.CreateAsync(user, model.Password);  
-            if (!result.Succeeded)  
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
-  
-            if (!await _roleManager.RoleExistsAsync(UserRole.Admin))  
-                await _roleManager.CreateAsync(new IdentityRole(UserRole.Admin)); 
-            if (!await _roleManager.RoleExistsAsync(UserRole.User))  
-                await _roleManager.CreateAsync(new IdentityRole(UserRole.User));  
-  
-            if (await _roleManager.RoleExistsAsync(UserRole.Admin))  
-            {  
-                await _userManager.AddToRoleAsync(user, UserRole.Admin);  
-            }  
-  
-            return Ok(new Response { Status = "Success", Message = "User created successfully!" });  
-        }
-        [HttpPost("roles")]
-        // [Authorize(Roles = "Admin")]
-        // [Authorize(Roles = "Admin")]
-        public async Task<ActionResult> AddRoleAsync(string role)
+        private string ipAddress()
         {
-            if (await _roleManager.RoleExistsAsync(role))
-            {
-                return StatusCode(StatusCodes.Status406NotAcceptable, new Response{Status = "Error", Message=$"Role of {role} already exists"});
-            }
-            await _roleManager.CreateAsync(new IdentityRole(role)); 
-            return StatusCode(StatusCodes.Status202Accepted, new Response{Status = "Success", Message=$"Successfully created role of {role}"});
+            if (Request.Headers.ContainsKey("X-Forwarded-For"))
+                return Request.Headers["X-Forwarded-For"];
+            else
+                return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
         // [HttpGet("getRoles")]
         // public async Task<bool> GetAllRolesAsync(string role)

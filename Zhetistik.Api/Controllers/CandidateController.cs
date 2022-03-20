@@ -68,22 +68,22 @@ namespace Zhetistik.Api.Controllers
             return candidateViewModel;
         }
         [HttpPost]
-        [Authorize(Roles = "User")]
-        public async Task<ActionResult<Candidate>> PostCandidateAsync(CreateCandidateViewModel candidateViewModel)
+        // [Authorize(Roles = "Candidate")]
+        public async Task<ActionResult<Candidate>> PostCandidateAsync(string zhetistikUserId)
         {
             var model = new Candidate();
-            var user = await _userManager.FindByIdAsync(candidateViewModel.ZhetistikUserId);
+            var user = await _userManager.FindByIdAsync(zhetistikUserId);
             if(user is null)
             {
                 return NotFound();
             }
-            model.ZhetistikUserId = candidateViewModel.ZhetistikUserId;
+            model.ZhetistikUserId = zhetistikUserId;
             model.Portfolio = new Portfolio();
             await _candidateRepository.CreateAsync(model);
             return CreatedAtAction(nameof(GetCandidateAsync), new { id = model.CandidateId }, model);
         }
         [HttpPut("locations/")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddLocationAsync(int candidateId, int locationId)
         {
             var existingLocation = await _locationRepository.GetAsync(locationId);
