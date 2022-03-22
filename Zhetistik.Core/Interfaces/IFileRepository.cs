@@ -9,8 +9,9 @@ namespace Zhetistik.Core.Interfaces
         //AchievementViewModel == 
         Task<FileModel> GetFileByAchievementAsync(int achievementId);
         Task<FileModel> GetFileAsync(int id);
+        Task<FileModel> GetFileAsync(string fileName);
         Task<IEnumerable<FileModel>> GetFilesAsync();
-        Task<FileModel> SaveFileAsync(IFormFile uploadFile);
+        Task<FileModel> SaveFileAsync(string path, IFormFile uploadFile);
         Task<bool> UpdateFileAsync(int fileId, IFormFile uploadFile);
         Task<bool> DeleteFileAsync(int id);
     }

@@ -40,6 +40,7 @@ namespace Zhetistik.Data.Context
             builder.Entity<City>().HasIndex(x=>x.CityName).IsUnique(true);
             builder.Entity<Location>().HasIndex(x=>x.CityId).IsUnique(true);
             builder.Entity<School>().HasIndex(x=>x.SchoolName).IsUnique(true);
+            builder.Entity<FileModel>().HasIndex(x=>x.Path).IsUnique(true);
             
             //Relationship configuring 
             builder.Entity<Candidate>().HasOne(x=>x.Portfolio).WithOne(x=>x.Candidate);

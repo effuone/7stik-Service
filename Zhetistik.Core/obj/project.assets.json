@@ -11118,11 +11118,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
+      "projectUniqueName": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
       "projectName": "Zhetistik.Core",
-      "projectPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
+      "projectPath": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
       "packagesPath": "C:\\Users\\777\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\obj\\",
+      "outputPath": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
@@ -11143,8 +11143,8 @@
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
-              "projectPath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj"
+            "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
+              "projectPath": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj"
             }
           }
         }

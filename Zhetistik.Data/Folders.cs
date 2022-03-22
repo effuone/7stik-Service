@@ -1,0 +1,4 @@
+enum Folders
+{
+    AchievementFolder, CandidateFolder
+}

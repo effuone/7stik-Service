@@ -30,7 +30,6 @@ namespace Zhetistik.Api.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<CandidateViewModel>> GetCandidateViewModelsAsync()
         {
             var candidates = await _candidateRepository.GetAllAsync();
@@ -50,7 +49,7 @@ namespace Zhetistik.Api.Controllers
             return list;
         }
         [HttpGet("{id}")]
-        [Authorize(Roles = "Candidate")]
+        // [Authorize(Roles = "Candidate")]
         public async Task<ActionResult<CandidateViewModel>> GetCandidateAsync(int id)
         {
             var candidateViewModel = await _candidateRepository.GetCandidateViewModelAsync(id);
@@ -122,24 +121,24 @@ namespace Zhetistik.Api.Controllers
             await _candidateRepository.AddSchoolAsync(candidateId, existingSchool, graduateDate);
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
         }
-        [HttpPut("portfolio/")]
-        [Authorize(Roles = "Candidate")]
-        public async Task<ActionResult> AddAchievementAsync(int candidateId, [FromForm]CreateAchievementViewModel achievementViewModel)
-        {
-            var existingCandidate = await _candidateRepository.GetAsync(candidateId);
-            if(existingCandidate is null) 
-            {
-                return NotFound();
-            }
-            var achievement = new Achievement();
-            achievement.AchievementName = achievementViewModel.AchievementName;
-            achievement.Description = achievementViewModel.Description;
-            achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
-            achievement.FileModel = await _fileRepository.SaveFileAsync(achievementViewModel.File);
-            achievement.PortfolioId = (await _portfolioRepository.GetPortfolioByCandidateAsync(candidateId)).PortfolioId;
-            await _achievementRepository.CreateAsync(achievement);
-            return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added achievement to candidate {candidateId}"});
-        }
+        // [HttpPut("portfolio/")]
+        // [Authorize(Roles = "Candidate")]
+        // public async Task<ActionResult> AddAchievementAsync(int candidateId, [FromForm]CreateAchievementViewModel achievementViewModel)
+        // {
+        //     var existingCandidate = await _candidateRepository.GetAsync(candidateId);
+        //     if(existingCandidate is null) 
+        //     {
+        //         return NotFound();
+        //     }
+        //     var achievement = new Achievement();
+        //     achievement.AchievementName = achievementViewModel.AchievementName;
+        //     achievement.Description = achievementViewModel.Description;
+        //     achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
+        //     achievement.FileModel = await _fileRepository.SaveFileAsync(achievementViewModel.File);
+        //     achievement.PortfolioId = (await _portfolioRepository.GetPortfolioByCandidateAsync(candidateId)).PortfolioId;
+        //     await _achievementRepository.CreateAsync(achievement);
+        //     return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added achievement to candidate {candidateId}"});
+        // }
         [HttpDelete("candidate/")]
         [Authorize(Roles = "Admin, Candidate")]
         public async Task<ActionResult> DeleteCandidateAsync(int id)

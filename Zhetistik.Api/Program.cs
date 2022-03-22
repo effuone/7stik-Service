@@ -13,6 +13,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity;
 using Zhetistik.Data.MailAccess;
 using Zhetistik.Data.Repositories;
+using Zhetistik.Api.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 

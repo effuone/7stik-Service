@@ -6,7 +6,6 @@ using Zhetistik.Data.Roles;
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
-    [Authorize]
     [Route("api/admins")]
     public class AdminController : ControllerBase
     {
@@ -63,7 +62,7 @@ namespace Zhetistik.Api.Controllers
         }
         [HttpPost("roles")]
         // [Authorize(Roles = "Admin")]
-        [Authorize(Roles = "Admin")]
+        // [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddRoleAsync(string role)
         {
             if (await _roleManager.RoleExistsAsync(role))

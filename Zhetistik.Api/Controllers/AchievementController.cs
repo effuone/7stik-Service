@@ -23,7 +23,6 @@ namespace Zhetistik.Api.Controllers
         }
         
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<IEnumerable<Achievement>> GetAchievementsAsync()
         {
             return await _achievementRepository.GetAllAsync();
@@ -57,12 +56,58 @@ namespace Zhetistik.Api.Controllers
             achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
             if(achievementViewModel.File is not null)
             {
-                achievement.FileModel = await _fileRepository.SaveFileAsync(achievementViewModel.File);
+                var existingFile = await _fileRepository.GetFileAsync(achievementViewModel.File.FileName);
+                if(existingFile is null)
+                {
+                    var env = _env.ContentRootPath;
+                    var achievementFolder = @$"/Achievements/{existingPortfolio.PortfolioId}/";
+                    var directory = env + achievementFolder;
+                    if (!Directory.Exists(directory))
+                    {
+                        Directory.CreateDirectory(directory);
+                    }
+                    var physicalPath = $"/{achievementFolder}/";
+                    achievement.FileModel = await _fileRepository.SaveFileAsync(physicalPath, achievementViewModel.File);
+                }
+                else
+                {
+                    return StatusCode(StatusCodes.Status400BadRequest, new Response {Status = "Fail", Message = "This file already exists, or change fileName"});
+                }
             }
             achievement.Description = achievementViewModel.Description;
             achievement.PortfolioId = portfolioId;
             await _achievementRepository.CreateAsync(achievement);
             return CreatedAtAction(nameof(GetAchievementAsync), new { id = achievement.AchievementId }, achievement);
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteAchievementAsync(int portfolioId, int achievementId)
+        {
+            var existingAchievement = await _achievementRepository.GetAsync(achievementId);
+            if(existingAchievement is null)
+            {
+                return NotFound();
+            }
+            var achievementFolder = @$"/Achievements/{portfolioId}/";
+            var file = existingAchievement.FileModel;
+            try    
+            {    
+                // Check if file exists with its full path    
+                if (System.IO.File.Exists(Path.Combine(achievementFolder, file.FileName)))    
+                {    
+                    // If file found, delete it    
+                    System.IO.File.Delete(Path.Combine(achievementFolder, file.FileName));    
+                }      
+            }    
+            catch (IOException ioExp)    
+            {    
+                 Console.WriteLine(ioExp.Message);    
+            }  
+            await _achievementRepository.DeleteAsync(achievementId);
+            if(file is not null)
+            {
+                await _fileRepository.DeleteFileAsync(existingAchievement.FileModel.Id);
+            }
+            return StatusCode(StatusCodes.Status204NoContent, new Response { Status = "Success", Message = "Deleted achievement"});
         }
     }
 }

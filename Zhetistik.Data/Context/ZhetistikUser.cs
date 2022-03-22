@@ -11,8 +11,5 @@ namespace Zhetistik.Data.Context
         public string FirstName { get; set; }
         [MaxLength(40)]
         public string LastName { get; set; }
-        public int? CandidateId { get; set; }
-        [ForeignKey("CandidateId")]
-        public Candidate Candidate { get; set; }
     }
 }

@@ -68,6 +68,8 @@ namespace Zhetistik.Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Path = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     Content = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
                 },
                 constraints: table =>
@@ -429,6 +431,13 @@ namespace Zhetistik.Data.Migrations
                 table: "Countries",
                 column: "CountryName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FileModels_Path",
+                table: "FileModels",
+                column: "Path",
+                unique: true,
+                filter: "[Path] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Locations_CityId",

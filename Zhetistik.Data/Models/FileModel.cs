@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Dapper.Contrib.Extensions;
 
 namespace Zhetistik.Data.Models
@@ -9,6 +10,7 @@ namespace Zhetistik.Data.Models
         public int Id { get; set; }
         public string FileName { get; set; }
         public string Path { get; set; }
+        [JsonIgnore]
         public byte[] Content { get; set; }
     }
 }

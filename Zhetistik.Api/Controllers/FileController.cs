@@ -1,37 +1,56 @@
-using Microsoft.AspNetCore.Authorization;
-
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
     [Route("api/files")]
     public class FileController : ControllerBase
     {
+        private readonly ZhetistikAppContext _context;
+        private readonly DapperContext _dapper;
         private readonly IFileRepository _fileRepository;
-        private readonly ILogger<FileController> _logger;
+        private readonly IWebHostEnvironment _env;
+        private const string _achievementFolder = "/AchievementFiles";
+        private const string _candidateFolder = "/CandidatePhotos";
+        private const string _schoolFolder = "/SchoolPhotos";
 
-        public FileController(IFileRepository fileRepository, ILogger<FileController> logger)
+        public FileController(ZhetistikAppContext context, DapperContext dapper, IFileRepository fileRepository, IWebHostEnvironment env)
         {
+            _context = context;
+            _dapper = dapper;
             _fileRepository = fileRepository;
-            _logger = logger;
+            _env = env;
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<FileModel>> PostFileAsync(IFormFile uploadFile)
+        {
+            var file = await _fileRepository.SaveFileAsync("Files", uploadFile);
+            return file;
         }
         [HttpGet]
-        [Authorize(Roles = "Admin")]
-        public async Task<IEnumerable<FileModel>> GetFileModelsAsync()
+        public async Task<IEnumerable<FileModel>> GetAllFilesAsync()
         {
             return await _fileRepository.GetFilesAsync();
         }
-        [HttpPost]
-        public async Task<ActionResult<FileModel>> PostFileModelAsync(IFormFile uploadFile)
+        [HttpGet("{id}")]
+        public async Task<ActionResult<FileModel>> GetFileAsync(int id)
         {
-            var model = await _fileRepository.SaveFileAsync(uploadFile);
-            return model;
+            var existingFile =await _fileRepository.GetFileAsync(id);
+            if(existingFile is null)
+            {
+                return NotFound();
+            }
+            return existingFile;
         }
-        [Route("achievement")]
-        [HttpGet]
-        public async Task<ActionResult<FileModel>> GetFileByAchievementAsync(int id)
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteFileAsync(int id)
         {
-            var fileModel = await _fileRepository.GetFileByAchievementAsync(id);
-            return fileModel;
+            var existingFile =await _fileRepository.GetFileAsync(id);
+            if(existingFile is null)
+            {
+                return NotFound();
+            }
+            await _fileRepository.DeleteFileAsync(id);
+            return StatusCode(StatusCodes.Status204NoContent, new Response { Status = "Success", Message = $"Deleted file of id {id}"});
         }
     }
 }

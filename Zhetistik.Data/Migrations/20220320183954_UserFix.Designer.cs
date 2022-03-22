@@ -12,8 +12,8 @@ using Zhetistik.Data.Context;
 namespace Zhetistik.Data.Migrations
 {
     [DbContext(typeof(ZhetistikAppContext))]
-    [Migration("20220317095747_Fix")]
-    partial class Fix
+    [Migration("20220320183954_UserFix")]
+    partial class UserFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -165,9 +165,6 @@ namespace Zhetistik.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CandidateId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -221,8 +218,6 @@ namespace Zhetistik.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CandidateId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -379,9 +374,13 @@ namespace Zhetistik.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Path")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Path")
+                        .IsUnique()
+                        .HasFilter("[Path] IS NOT NULL");
 
                     b.ToTable("FileModels");
                 });
@@ -513,15 +512,6 @@ namespace Zhetistik.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Zhetistik.Data.Context.ZhetistikUser", b =>
-                {
-                    b.HasOne("Zhetistik.Data.Models.Candidate", "Candidate")
-                        .WithMany()
-                        .HasForeignKey("CandidateId");
-
-                    b.Navigation("Candidate");
                 });
 
             modelBuilder.Entity("Zhetistik.Data.Models.Achievement", b =>

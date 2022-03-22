@@ -98,52 +98,53 @@ namespace Zhetistik.Api.Controllers
         }
         [AllowAnonymous]                                
         [HttpPost("register")]
-        public async Task<ActionResult> RegisterAsync([FromBody] RegisterModelType registerModel)
+        public async Task<ActionResult<string>> RegisterAsync([FromBody] RegisterModelType registerModel)
         {
+            //Check if user exists
             var userExists = await _userManager.FindByEmailAsync(registerModel.Email);  
             if (userExists != null)  
-                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });   
-
-                ZhetistikUser user = new ZhetistikUser()  
-                {  
-                    Email = registerModel.Email,  
-                    SecurityStamp = Guid.NewGuid().ToString(),  
-                    UserName = registerModel.UserName,
-                    FirstName = registerModel.FirstName,
-                    LastName = registerModel.LastName,
-                    PhoneNumber = registerModel.PhoneNumber  
-                };
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" }); 
+            }
+            //Create new user
+            ZhetistikUser user = new ZhetistikUser()  
+            {  
+                Email = registerModel.Email,  
+                SecurityStamp = Guid.NewGuid().ToString(),  
+                UserName = registerModel.UserName,
+                FirstName = registerModel.FirstName,
+                LastName = registerModel.LastName,
+                PhoneNumber = registerModel.PhoneNumber  
+            };
+            //Check role validity        
             if(await _roleManager.RoleExistsAsync(registerModel.Role) is false)
             {
                 return NotFound("Role not found");
             }
+            //Update new user in database
             var result = await _userManager.CreateAsync(user, registerModel.Password);  
-                if (result.Succeeded)
-                {
-                    await _userManager.AddToRoleAsync(user, registerModel.Role);
-                    //Email Confirmation
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var request = new MailRequest();
-                    var callbackUrl = Url.Action(
-                        "ConfirmEmailAsync",
-                        "Account",
-                        new { userId = user.Id, code = code },
-                        protocol: HttpContext.Request.Scheme);
-                    request.Subject = "7stik email confirmation!";
-                    request.Body = 
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, registerModel.Role);
+                //Email Confirmation
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var request = new MailRequest();
+                var callbackUrl = Url.Action("ConfirmEmailAsync", "Account", new { userId = user.Id, code = code }, protocol: HttpContext.Request.Scheme);
+                request.Subject = "7stik email confirmation!";
+                request.Body = 
                     @$"<form action='{callbackUrl}' method='POST'> 
                         <div>
                             <button><h1>Confirm email</h1></button>
                         </div>
                       </form>";
-                    request.ToEmail = registerModel.Email;
-                    await _mailSender.SendEmailAsync(request);
-                }  
-                
-                if (!result.Succeeded)  
-                    return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
-    
-                return Ok(new Response { Status = "Success", Message = "Now confirm your email" });
+                request.ToEmail = registerModel.Email;
+                await _mailSender.SendEmailAsync(request);
+                return user.Id;
+            }  
+            else
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });  
+            }
         }
         [HttpPost("confirmEmail")]
         [AllowAnonymous]
@@ -161,7 +162,7 @@ namespace Zhetistik.Api.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if(result.Succeeded)
             {
-                return Ok(new Response { Status = "Success", Message = user.Id });
+                return Ok(new Response { Status = "Success", Message = "Email confirmed successfully" });
             }
             else
             {

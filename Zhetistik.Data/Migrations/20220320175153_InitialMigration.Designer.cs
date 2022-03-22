@@ -12,7 +12,7 @@ using Zhetistik.Data.Context;
 namespace Zhetistik.Data.Migrations
 {
     [DbContext(typeof(ZhetistikAppContext))]
-    [Migration("20220312124003_InitialMigration")]
+    [Migration("20220320175153_InitialMigration")]
     partial class InitialMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -375,7 +375,17 @@ namespace Zhetistik.Data.Migrations
                     b.Property<byte[]>("Content")
                         .HasColumnType("varbinary(max)");
 
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Path")
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("Path")
+                        .IsUnique()
+                        .HasFilter("[Path] IS NOT NULL");
 
                     b.ToTable("FileModels");
                 });

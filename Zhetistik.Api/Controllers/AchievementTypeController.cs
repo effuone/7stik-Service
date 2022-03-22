@@ -15,7 +15,6 @@ namespace Zhetistik.Api.Controllers
             _logger = logger;
         }
         [HttpGet]
-        [Authorize(Roles ="Admin")]
         public async Task<IEnumerable<AchievementType>> GetAchievementTypesAsync()
         {
             return await _achievementTypeRepository.GetAllAsync();
@@ -31,7 +30,6 @@ namespace Zhetistik.Api.Controllers
             return existingModel;
         }
         [HttpPost]
-        [Authorize(Roles ="Admin")]
         public async Task<ActionResult<AchievementType>> PostAchievementTypeAsync(string achievementTypeName)
         {
             var existingAchievementType = await _achievementTypeRepository.GetAsync(achievementTypeName);
@@ -45,7 +43,6 @@ namespace Zhetistik.Api.Controllers
             return CreatedAtAction(nameof(GetAchievementTypeAsync), new { id = model.AchievementTypeId }, model);
         }
         [HttpPut("{id}")]
-        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> UpdateAchievementTypeAsync(int id, string achievementTypeName)
         {
             var existingModel =  await _achievementTypeRepository.GetAsync(id);
@@ -57,7 +54,6 @@ namespace Zhetistik.Api.Controllers
             return StatusCode(StatusCodes.Status204NoContent, new Response { Status = "Success", Message = $"Updated achievement type {id}"});
         }
         [HttpDelete("{id}")]
-        [Authorize(Roles ="Admin")]
         public async Task<ActionResult> DeleteAchievementTypeAsync(int id)
         {
             var existingModel =  await _achievementTypeRepository.GetAsync(id);

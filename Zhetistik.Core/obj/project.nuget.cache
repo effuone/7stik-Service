@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "qu1XXhHY1JUpi/jq96nAJFou7bvdT19+L2/2aVcCmBAUUIIiubI+WIhhl6ahKedRc5BLKnnP8sf3XAcpyTbiLA==",
+  "dgSpecHash": "0XJx/U9pl19h2vg/VOCj3SsT8QNsBY1AVkKCSi2BFrBzO7eiQaBXQW9n/psrD6vqFFGj43QAK3JQXaz+SziIzQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
+  "projectFilePath": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\777\\.nuget\\packages\\automapper\\11.0.1\\automapper.11.0.1.nupkg.sha512",
     "C:\\Users\\777\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\11.0.0\\automapper.extensions.microsoft.dependencyinjection.11.0.0.nupkg.sha512",
