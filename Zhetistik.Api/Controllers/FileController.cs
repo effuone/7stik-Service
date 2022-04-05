@@ -19,11 +19,19 @@ namespace Zhetistik.Api.Controllers
             _fileRepository = fileRepository;
             _env = env;
         }
-
+        private bool PostDirectoryAsync(string path, string directoryName)
+        {
+            if(Directory.Exists(path  + '/' + directoryName))
+            {
+                return false;
+            }
+            Directory.CreateDirectory(path + '/' + directoryName);
+            return true;
+        }
         [HttpPost]
         public async Task<ActionResult<FileModel>> PostFileAsync(IFormFile uploadFile)
         {
-            var file = await _fileRepository.SaveFileAsync("Files", uploadFile);
+            var file = await _fileRepository.SaveFileAsync(_env.ContentRootPath, "Files", uploadFile);
             return file;
         }
         [HttpGet]

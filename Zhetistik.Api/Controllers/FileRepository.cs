@@ -1,11 +1,4 @@
-using System.Data.SqlClient;
-using System.Net;
-using System.Net.Http.Headers;
 using Dapper;
-using Microsoft.AspNetCore.Http;
-using Zhetistik.Core.DataAccess;
-using Zhetistik.Core.Interfaces;
-using Zhetistik.Data.Context;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -25,9 +18,15 @@ namespace Zhetistik.Api.Controllers
         public async Task<bool> DeleteFileAsync(int id)
         {
             var model = await _context.FileModels.FindAsync(id);
+            string[] files = Directory.GetFiles(model.Path);
+            File.Delete(model.Path);
             _context.Remove(model);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public void DeleteDirectory(string path)
+        {
+            Directory.Delete(path);
         }
         public async Task<FileModel> GetFileByAchievementAsync(int achievementId)
         {
@@ -49,7 +48,7 @@ namespace Zhetistik.Api.Controllers
             return await _context.FileModels.ToListAsync();
         }
 
-        public async Task<FileModel> SaveFileAsync(string path, IFormFile uploadFile)
+        public async Task<FileModel> SaveFileAsync(string env, string path, IFormFile uploadFile)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -57,23 +56,27 @@ namespace Zhetistik.Api.Controllers
                 // Upload the file if less than 2 MB
                 if (memoryStream.Length < 2097152)
                 {
+                    if(!Directory.Exists(_env.ContentRootPath + $"{path}"))
+                    {
+                        Directory.CreateDirectory(path);
+                    }
                     string fileName = uploadFile.FileName;
-                        var physicalPath = _env.ContentRootPath + $"/{path}/" + fileName;
-                        var file = new FileModel();
-                        file.FileName = fileName;
-                        file.Path = _env.ContentRootPath + @$"\{path}\" + fileName;
-                        using(var stream = new FileStream(physicalPath, FileMode.Create))
+                    var physicalPath = _env.ContentRootPath + @$"{path}/" + fileName;
+                    var file = new FileModel();
+                    file.FileName = fileName;
+                    file.Path = physicalPath;
+                    using(var stream = new FileStream(physicalPath, FileMode.Create))
+                    {
+                        await uploadFile.CopyToAsync(stream);
+                        using(var ms = new MemoryStream())
                         {
-                            await uploadFile.CopyToAsync(stream);
-                            using(var ms = new MemoryStream())
-                            {
-                                await uploadFile.CopyToAsync(ms);
-                                file.Content = ms.ToArray();
-                            }
+                            await uploadFile.CopyToAsync(ms);
+                            file.Content = ms.ToArray();
                         }
-                        await _context.FileModels.AddAsync(file);
-                        await _context.SaveChangesAsync();
-                        return file;
+                    }
+                    await _context.FileModels.AddAsync(file);
+                    await _context.SaveChangesAsync();
+                    return file;
                 }
                 else
                 {
@@ -108,5 +111,7 @@ namespace Zhetistik.Api.Controllers
             var file = await list.FirstOrDefaultAsync();
             return file;
         }
+
+        
     }
 }

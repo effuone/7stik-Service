@@ -24,10 +24,10 @@ namespace Zhetistik.Data.Repositories
             await _context.SaveChangesAsync();
             return model.AchievementId;
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
-            var model = await _context.Achievements.FindAsync(id);
+            var model = await GetAsync(id);
+            _context.FileModels.Remove(model.FileModel);
             var result = _context.Achievements.Remove(model);
             await _context.SaveChangesAsync();
             return true;

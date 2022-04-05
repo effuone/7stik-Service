@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Zhetistik.Data.AuthModels;
 using Zhetistik.Data.Roles;
+using Dapper;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -12,19 +13,40 @@ namespace Zhetistik.Api.Controllers
         private readonly ZhetistikAppContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ICandidateRepository _candidateRepository;
+        private readonly DapperContext _dapper;
         private readonly UserManager<ZhetistikUser> _userManager;
         private readonly SignInManager<ZhetistikUser> _signInManager;
         private readonly ILogger<AdminController> _logger;
 
-        public AdminController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, ILogger<AdminController> logger)
+        public AdminController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, DapperContext dapper, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, ILogger<AdminController> logger)
         {
             _dbContext = dbContext;
             _roleManager = roleManager;
             _candidateRepository = candidateRepository;
+            _dapper = dapper;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
         }
+
+        [HttpGet]
+        public async Task<IEnumerable<ZhetistikUser>> GetZhetistikUsersAsync()
+        {
+            string sql = "SELECT* FROM AspNetUsers";
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var users = await connection.QueryAsync<ZhetistikUser>(sql);
+                return users;
+            }
+        }
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUserAsync(string id)
+        {
+            await _userManager.DeleteAsync(await _userManager.FindByIdAsync(id));
+            return StatusCode(StatusCodes.Status204NoContent, new Response { Status = "Success", Message = "Deleted user"});
+        }
+
         [HttpPost]
         [Authorize(Roles = "Admin")]  
         [Route("register-admin")]  

@@ -39,7 +39,12 @@ namespace Zhetistik.Data.Repositories
 
         public async Task<Portfolio> GetAsync(int id)
         {
-            return await _context.Portfolios.FindAsync(id);
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var model = (await connection.QueryAsync<Portfolio>($"select* from Portfolios where PortfolioId = {id}")).FirstOrDefault();
+                return model;
+            }
         }
 
         public async Task<Portfolio> GetPortfolioByCandidateAsync(int candidateId)

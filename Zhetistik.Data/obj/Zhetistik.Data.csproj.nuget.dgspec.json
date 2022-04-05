@@ -1,31 +1,25 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {}
+    "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj": {}
   },
   "projects": {
-    "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
+    "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
+        "projectUniqueName": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj",
         "projectName": "Zhetistik.Data",
-        "projectPath": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
-        "packagesPath": "C:\\Users\\777\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\777\\Desktop\\7stik-Service\\Zhetistik.Data\\obj\\",
+        "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj",
+        "packagesPath": "/home/effuone/.nuget/packages/",
+        "outputPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/obj/",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-        ],
         "configFilePaths": [
-          "C:\\Users\\777\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "/home/effuone/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net6.0"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -144,7 +138,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.201/RuntimeIdentifierGraph.json"
         }
       }
     }

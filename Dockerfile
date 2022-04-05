@@ -3,12 +3,6 @@ WORKDIR /app
 EXPOSE 9090
 EXPOSE 8080
 
-ENV ASPNETCORE_URLS=http://+:9090
-ENV ConnectionString="Server=tcp:localhost;Database=ZhetistikDb;User Id=hbuser;Password=hbuser1029"
-ENV MailPassword="rustcohle2022*"
-ENV JwtKey="eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY0NjQ4Mzk1MCwiaWF0IjoxNjQ2NDgzOTUwfQ.3fD1MslLNvdiN5Q3Vy-RSmO6AxeoIEZE7f2qA1VP6x8"
-
-
 FROM mcr.microsoft.com/dotnet/sdk:6.0-focal AS build
 WORKDIR /src
 COPY ["Zhetistik.Data/Zhetistik.Data.csproj", "Zhetistik.Data/"]
