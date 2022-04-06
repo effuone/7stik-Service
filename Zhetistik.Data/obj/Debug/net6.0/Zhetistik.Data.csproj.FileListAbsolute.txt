@@ -54,3 +54,17 @@ C:\Users\777\Desktop\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Dat
 C:\Users\777\Desktop\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\ref\Zhetistik.Data.dll
 C:\Users\777\Desktop\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.pdb
 C:\Users\777\Desktop\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.genruntimeconfig.cache
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\bin\Debug\net6.0\Zhetistik.Data.deps.json
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\bin\Debug\net6.0\Zhetistik.Data.runtimeconfig.json
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\bin\Debug\net6.0\Zhetistik.Data.dll
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\bin\Debug\net6.0\ref\Zhetistik.Data.dll
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\bin\Debug\net6.0\Zhetistik.Data.pdb
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.csproj.AssemblyReference.cache
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.GeneratedMSBuildEditorConfig.editorconfig
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.AssemblyInfoInputs.cache
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.AssemblyInfo.cs
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.csproj.CoreCompileInputs.cache
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.dll
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\ref\Zhetistik.Data.dll
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.pdb
+c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.Data\obj\Debug\net6.0\Zhetistik.Data.genruntimeconfig.cache

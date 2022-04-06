@@ -15,7 +15,7 @@ namespace Zhetistik.Api.Controllers
             _logger = logger;
         }
         [HttpGet]
-        [Authorize(Roles ="Admin")]
+        // [Authorize(Roles ="Admin")]
         public async Task<IEnumerable<Portfolio>> GetPortfoliosAsync()
         {
             return await _portfolioRepository.GetAllAsync();
@@ -25,7 +25,7 @@ namespace Zhetistik.Api.Controllers
         {
             return await _portfolioRepository.GetAsync(portfolioId);
         }
-        [Authorize(Roles = "Candidate")]
+        // [Authorize(Roles = "Candidate")]
         [HttpGet("candidate/")]
         public async Task<ActionResult<Portfolio>> GetPortfolioByCandidateAsync(int candidateId)
         {

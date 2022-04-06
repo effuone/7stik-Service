@@ -1,28 +1,51 @@
+using System.Data.SqlClient;
 using Dapper;
+using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Http;
+using Zhetistik.Core.DataAccess;
+using Zhetistik.Core.Interfaces;
+using Zhetistik.Data.Context;
 
-namespace Zhetistik.Api.Controllers
+namespace Zhetistik.Core.Repositories
 {
     public class FileRepository : IFileRepository
     {
         private readonly ZhetistikAppContext _context;
         private readonly DapperContext _dapper;
-        private readonly IWebHostEnvironment _env;
 
-        public FileRepository(ZhetistikAppContext context, DapperContext dapper, IWebHostEnvironment env)
+        public FileRepository(ZhetistikAppContext context, DapperContext dapper)
         {
             _context = context;
             _dapper = dapper;
-            _env = env;
         }
-
         public async Task<bool> DeleteFileAsync(int id)
         {
-            var model = await _context.FileModels.FindAsync(id);
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                string sql = @$"delete from FileModels
+                where Id = {id}";
+                var command = new SqlCommand(sql, (SqlConnection)connection);
+                var result = await command.ExecuteNonQueryAsync();
+                return true;
+            }
+        }
+        public async Task<bool> DeleteFilesAsync(int id)
+        {
+            var model = await GetFileAsync(id);
             string[] files = Directory.GetFiles(model.Path);
-            File.Delete(model.Path);
-            _context.Remove(model);
-            await _context.SaveChangesAsync();
-            return true;
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var results = new List<bool>();
+                foreach(var file in files)
+                {
+                    File.Delete(file);
+                    var result = await connection.DeleteAsync<FileModel>(new FileModel { Id = (await GetFileAsync(file)).Id });
+                    results.Add(result);
+                }
+                return true;
+            }
         }
         public void DeleteDirectory(string path)
         {
@@ -40,12 +63,22 @@ namespace Zhetistik.Api.Controllers
         }
         public async Task<FileModel> GetFileAsync(int id)
         {
-            return await _context.FileModels.FindAsync(id);
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var model = await connection.GetAsync<FileModel>(id);
+                return model;
+            }
         }
 
         public async Task<IEnumerable<FileModel>> GetFilesAsync()
         {
-            return await _context.FileModels.ToListAsync();
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var models = (await connection.GetAllAsync<FileModel>()).ToList();
+                return models;
+            }
         }
 
         public async Task<FileModel> SaveFileAsync(string env, string path, IFormFile uploadFile)
@@ -56,12 +89,12 @@ namespace Zhetistik.Api.Controllers
                 // Upload the file if less than 2 MB
                 if (memoryStream.Length < 2097152)
                 {
-                    if(!Directory.Exists(_env.ContentRootPath + $"{path}"))
+                    if(!Directory.Exists(env + $"{path}"))
                     {
                         Directory.CreateDirectory(path);
                     }
                     string fileName = uploadFile.FileName;
-                    var physicalPath = _env.ContentRootPath + @$"{path}/" + fileName;
+                    var physicalPath = env + @$"{path}/" + fileName;
                     var file = new FileModel();
                     file.FileName = fileName;
                     file.Path = physicalPath;
@@ -111,7 +144,5 @@ namespace Zhetistik.Api.Controllers
             var file = await list.FirstOrDefaultAsync();
             return file;
         }
-
-        
     }
 }

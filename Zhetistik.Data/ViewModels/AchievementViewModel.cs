@@ -10,7 +10,7 @@ namespace Zhetistik.Data.ViewModels
         public string AchievementTypeName { get; set; }
         public string AchievementName { get; set; }
         public string Description { get; set; }
-        public FileModel FileModel { get; set; }
+        public string FilePath { get; set; }
     }
     public class CreateAchievementViewModel
     {

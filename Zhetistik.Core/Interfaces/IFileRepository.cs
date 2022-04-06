@@ -11,6 +11,7 @@ namespace Zhetistik.Core.Interfaces
         Task<FileModel> GetFileAsync(int id);
         void DeleteDirectory(string path);
         Task<FileModel> GetFileAsync(string fileName);
+        Task<bool> DeleteFilesAsync(int id);
         Task<IEnumerable<FileModel>> GetFilesAsync();
         Task<FileModel> SaveFileAsync(string env, string path, IFormFile uploadFile);
         Task<bool> UpdateFileAsync(int fileId, IFormFile uploadFile);

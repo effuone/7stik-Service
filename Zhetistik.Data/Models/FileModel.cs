@@ -3,7 +3,7 @@ using Dapper.Contrib.Extensions;
 
 namespace Zhetistik.Data.Models
 {
-    [Table("Files")]
+    [Table("FileModels")]
     public class FileModel
     {
         [Key]
