@@ -66,52 +66,33 @@ namespace Zhetistik.Api.Controllers
             return achievements;
         }
         [HttpPost]
-        public async Task<ActionResult<AchievementViewModel>> AddAchievementAsync(int portfolioId, [FromForm]CreateAchievementViewModel achievementViewModel)
+        public async Task<ActionResult<Achievement>> AddAchievementAsync(int portfolioId, [FromForm]CreateAchievementViewModel achievementViewModel)
         {
+            //check wheteher portfolio exists
+            //create new achievement
+            //map it
+            //save it
+            //display it
             var existingPortfolio = await _portfolioRepository.GetAsync(portfolioId);
             if(existingPortfolio is null)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status404NotFound);
             }
             var achievement = new Achievement();
             achievement.AchievementName = achievementViewModel.AchievementName;
             achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
-            if(achievementViewModel.File is not null)
-            {
-                var existingFile = await _fileRepository.GetFileAsync(achievementViewModel.File.FileName);
-                if(existingFile is null)
-                {
-                    var env = _env.ContentRootPath;
-                    var directory = "Achievements/" + portfolioId + '/';
-                    //home/effuone/Desktop/7stik-Service/Zhetistik.Api/Achievements/PortfolioId
-                    achievement.FileModel = await _fileRepository.SaveFileAsync(env, directory, achievementViewModel.File);
-                }
-                else
-                {
-                    return StatusCode(StatusCodes.Status400BadRequest, new Response {Status = "Fail", Message = "This file already exists, or change fileName"});
-                }
-            }
             achievement.Description = achievementViewModel.Description;
-            achievement.PortfolioId = portfolioId;
-            await _achievementRepository.CreateAsync(achievement);
-            var newAchievementViewModel = new AchievementViewModel();
-            newAchievementViewModel.AchievementId = achievement.AchievementId;
-            newAchievementViewModel.AchievementTypeName = (await _achievementTypeRepository.GetAsync(achievement.AchievementTypeId)).AchievementTypeName;
-            newAchievementViewModel.Description = achievement.Description;
-            newAchievementViewModel.FilePath = achievement.FileModel.Path;
-            return CreatedAtAction(nameof(GetAchievementAsync), new { id = achievement.AchievementId }, newAchievementViewModel);
+            string newPath = @"Achievements\" + portfolioId + @"\";
+            var fileId = await _fileRepository.SaveFileAsync(_env.ContentRootPath, newPath, achievementViewModel.File);
+            achievement.FileModel = await _fileRepository.GetFileAsync(fileId);
+            var id = await _achievementRepository.CreateAsync(achievement);
+            return CreatedAtAction(nameof(GetAchievementAsync), new { id = id }, achievement);
         }
-        [HttpDelete]
-        public async Task<ActionResult> DeleteAchievementAsync(int achievementId)
-        {
-            var achievement = await _achievementRepository.GetAsync(achievementId);
-            if(achievement is null)
-            {
-                return StatusCode(StatusCodes.Status404NotFound);
-            }
-            await _fileRepository.DeleteFileAsync(achievement.FileModel.Id);
-            await _achievementRepository.DeleteAsync(achievementId);
-            return StatusCode(StatusCodes.Status204NoContent);
-        }
+        // [HttpDelete]
+        // public async Task<ActionResult> DeleteAchievementAsync(int achievementId)
+        // {
+        //     //удаляется достижение
+        //     //удаляется файл
+        // }
     }
 }

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {}
+    "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {}
   },
   "projects": {
-    "C:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
+    "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
+        "projectUniqueName": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
         "projectName": "Zhetistik.Data",
-        "projectPath": "C:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
+        "projectPath": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj",
         "packagesPath": "C:\\Users\\777\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\obj\\",
+        "outputPath": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"

@@ -35,7 +35,7 @@ namespace Zhetistik.Api.Controllers
             return existingModel;
         }
         [HttpPost]
-        [Authorize(Roles ="Admin")]
+        // [Authorize(Roles ="Admin")]
         public async Task<ActionResult<School>> PostSchoolAsync(CreateSchoolViewModel schoolViewModel)
         {
             var existingLocation = await _locationRepository.GetAsync(schoolViewModel.LocationId);

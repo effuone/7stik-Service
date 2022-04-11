@@ -30,7 +30,7 @@ namespace Zhetistik.Data.Context
             //Alibek's connection string
             // optionsBuilder.UseSqlServer("Server=tcp:localhost;Database=ZhetistikDb;User Id=hbuser;Password=hbuser1029");
             //Khaknazar's connection string
-            optionsBuilder.UseSqlServer(@"Data Source=localhost\SQLEXPRESS;Initial Catalog=ZhetistikDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
+            optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=ZhetistikDb;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False");
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

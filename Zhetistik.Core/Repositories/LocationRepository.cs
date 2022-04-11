@@ -96,7 +96,9 @@ namespace Zhetistik.Core.Repositories
             using(var connection = _context.CreateConnection())
             {
                 connection.Open();
-                var model = (await connection.QueryAsync<Location>($"")).FirstOrDefault();
+                var model = (await connection.QueryAsync<Location>($@"select* 
+                from Locations as loc, Cities as ct, Countries as co 
+                where loc.CountryId = co.CountryId and ct.CityId = loc.CityId and co.CountryName = {countryName} and ct.CityName = {cityName}")).FirstOrDefault();
                 return model;
             }
         }

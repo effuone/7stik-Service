@@ -102,15 +102,8 @@ namespace Zhetistik.Core.Repositories
                 connection.Open();
                 {
                     string sql = 
-                                @"select candidates.CandidateId, users.FirstName, users.LastName, candidates.Birthday, locations.LocationId, countries.CountryName, cities.CityName, candidates.GraduateYear
-                    from Candidates as candidates, AspNetUsers as users, Schools as schools, Locations as locations, Countries as countries, Cities as cities
-                    where candidates.ZhetistikUserId = users.Id
-                    and locations.LocationId = candidates.LocationId
-                    and locations.CountryId = countries.CountryId
-                    and locations.CityId = cities.CityId
-                    and candidates.CandidateId = @id";
+                                @"exec GetCandidates";
                     var command = new SqlCommand(sql, (SqlConnection)connection);
-                    command.Parameters.Add(new SqlParameter("@id", candidateId));
                     var reader = await command.ExecuteReaderAsync();
                     if(reader.HasRows is false)
                     {
@@ -118,36 +111,13 @@ namespace Zhetistik.Core.Repositories
                     }
                     await reader.ReadAsync();
                     candidateViewModel.CandidateId = candidateId;
-                    candidateViewModel.FirstName = reader.GetString(1);
-                    candidateViewModel.LastName = reader.GetString(2);
+                    candidateViewModel.FirstName = reader.GetString(2);
+                    candidateViewModel.LastName = reader.GetString(3);
                     candidateViewModel.Birthday = Convert.IsDBNull(reader.GetDateTime(3)) is false ? reader.GetDateTime(3) : DateTime.MinValue;
-                    candidateViewModel.Location = new LocationViewModel{ LocationId = reader.GetInt32(4), CountryName = reader.GetString(5), CityName = reader.GetString(6)};
-                    candidateViewModel.GraduateYear = reader.GetDateTime(7);
-                    connection.Close();
-                }
-                {
-                    connection.Open();
-                    string sql = 
-                                        @"select schools.Schoolname, schools.FoundationYear, locations.LocationId, countries.CountryName, cities.CityName FROM
-                    Schools as schools, Countries as countries, Cities as cities, Locations as locations, Candidates as candidates
-                    where countries.CountryId = locations.CountryId and locations.CityId = locations.CityId 
-                    and schools.LocationId = locations.LocationId
-                    and candidates.SchoolId = schools.SchoolId
-                    and candidates.CandidateId = @id";
-                    var command = new SqlCommand(sql, (SqlConnection) connection);
-                    command.Parameters.Add(new SqlParameter("@id", candidateId));
-                    var reader = await command.ExecuteReaderAsync();
-                    if(reader.HasRows is false)
-                    {
-                        candidateViewModel.School = null;
-                    }
-
-                    await reader.ReadAsync();
-                    var schoolViewModel = new SchoolViewModel();
-                    schoolViewModel.SchoolName =  reader.GetString(0);
-                    schoolViewModel.FoundationYear =  reader.GetDateTime(1);
-                    schoolViewModel.Location = new LocationViewModel{LocationId = reader.GetInt32(2), CountryName = reader.GetString(3), CityName = reader.GetString(4)};
-                    candidateViewModel.School = schoolViewModel;
+                    candidateViewModel.CountryName = Convert.IsDBNull(reader.GetString(5)) is false ? reader.GetString(5) : null;
+                    candidateViewModel.CityName = Convert.IsDBNull(reader.GetString(6)) is false ? reader.GetString(6) : null;
+                    candidateViewModel.SchoolName = Convert.IsDBNull(reader.GetString(7)) is false ? reader.GetString(7) : null;
+                    candidateViewModel.GraduateYear = Convert.IsDBNull(reader.GetDateTime(8)) is false ? reader.GetDateTime(8) : null;
                     connection.Close();
                 }
                 return candidateViewModel;

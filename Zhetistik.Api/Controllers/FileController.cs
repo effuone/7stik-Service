@@ -31,8 +31,8 @@ namespace Zhetistik.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<FileModel>> PostFileAsync(IFormFile uploadFile)
         {
-            var file = await _fileRepository.SaveFileAsync(_env.ContentRootPath, "Files", uploadFile);
-            return file;
+            var id = await _fileRepository.SaveFileAsync(_env.ContentRootPath, "Files", uploadFile);
+            return CreatedAtAction(nameof(GetFileAsync), new { id = id }, id);
         }
         [HttpGet]
         public async Task<IEnumerable<FileModel>> GetAllFilesAsync()

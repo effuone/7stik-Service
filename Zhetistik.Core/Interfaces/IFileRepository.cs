@@ -13,7 +13,7 @@ namespace Zhetistik.Core.Interfaces
         Task<FileModel> GetFileAsync(string fileName);
         Task<bool> DeleteFilesAsync(int id);
         Task<IEnumerable<FileModel>> GetFilesAsync();
-        Task<FileModel> SaveFileAsync(string env, string path, IFormFile uploadFile);
+        Task<int> SaveFileAsync(string env, string path, IFormFile uploadFile);
         Task<bool> UpdateFileAsync(int fileId, IFormFile uploadFile);
         Task<bool> DeleteFileAsync(int id);
     }

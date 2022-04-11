@@ -63,7 +63,7 @@ namespace Zhetistik.Core.Repositories
             using(var connection = _context.CreateConnection())
             {
                 connection.Open();
-                var model = (await connection.QueryAsync<Country>("select* from Countries where CountryName = 'countryName'")).FirstOrDefault();
+                var model = (await connection.QueryAsync<Country>($"select* from Countries where CountryName = {countryName}")).FirstOrDefault();
                 return model;
             }
         }

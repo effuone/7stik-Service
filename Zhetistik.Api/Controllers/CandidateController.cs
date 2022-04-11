@@ -29,25 +29,24 @@ namespace Zhetistik.Api.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public async Task<IEnumerable<CandidateViewModel>> GetCandidateViewModelsAsync()
-        {
-            var candidates = await _candidateRepository.GetAllAsync();
-            var list = new List<CandidateViewModel>();
-            foreach(var candidate in candidates)
-            {
-                var model = await _candidateRepository.GetCandidateViewModelAsync(candidate.CandidateId);
-                var portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidate.CandidateId);
-                var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidate.CandidateId);
-                var portfolioViewModel = new PortfolioViewModel();
-                portfolioViewModel.PortfolioId = portfolio.PortfolioId;
-                portfolioViewModel.IsPublished = portfolio.IsPublished;
-                portfolioViewModel.Achievements = achievements;
-                model.PortfolioViewModel = portfolioViewModel;
-                list.Add(model);
-            }
-            return list;
-        }
+        // [HttpGet]
+        // public async Task<IEnumerable<CandidateViewModel>> GetCandidateViewModelsAsync()
+        // {
+        //     var candidates = await _candidateRepository.GetAllAsync();
+        //     var list = new List<CandidateViewModel>();
+        //     foreach(var candidate in candidates)
+        //     {
+        //         var model = await _candidateRepository.GetCandidateViewModelAsync(candidate.CandidateId);
+        //         var portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidate.CandidateId);
+        //         var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidate.CandidateId);
+        //         var portfolioViewModel = new PortfolioViewModel();
+        //         portfolioViewModel.PortfolioId = portfolio.PortfolioId;
+        //         portfolioViewModel.IsPublished = portfolio.IsPublished;
+        //         portfolioViewModel.Achievements = achievements;
+        //         list.Add(model);
+        //     }
+        //     return list;
+        // }
         [HttpGet("{id}")]
         // [Authorize(Roles = "Candidate")]
         public async Task<ActionResult<CandidateViewModel>> GetCandidateAsync(int id)
@@ -63,7 +62,6 @@ namespace Zhetistik.Api.Controllers
             portfolioViewModel.PortfolioId = portfolio.PortfolioId;
             portfolioViewModel.IsPublished = portfolio.IsPublished;
             portfolioViewModel.Achievements = achievements;
-            candidateViewModel.PortfolioViewModel = portfolioViewModel;
             return candidateViewModel;
         }
         [HttpPost]
@@ -82,7 +80,7 @@ namespace Zhetistik.Api.Controllers
             return CreatedAtAction(nameof(GetCandidateAsync), new { id = model.CandidateId }, model);
         }
         [HttpPut("locations/")]
-        [Authorize(Roles = "Candidate")]
+        // [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddLocationAsync(int candidateId, int locationId)
         {
             var existingLocation = await _locationRepository.GetAsync(locationId);
@@ -95,7 +93,7 @@ namespace Zhetistik.Api.Controllers
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
         }
         [HttpPut("birthdate/")]
-        [Authorize(Roles = "Candidate")]
+        // [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddBirthdateAsync(int candidateId, int year, int month, int day)
         {
             var birthdate = new DateTime(year, month, day);
@@ -108,7 +106,7 @@ namespace Zhetistik.Api.Controllers
             return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
         }
         [HttpPut("school/")]
-        [Authorize(Roles = "Candidate")]
+        // [Authorize(Roles = "Candidate")]
         public async Task<ActionResult> AddSchoolAsync(int candidateId, int schoolId, int graduateYear)
         {
             var graduateDate = new DateTime(graduateYear, 5, 25);
@@ -140,7 +138,7 @@ namespace Zhetistik.Api.Controllers
         //     return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added achievement to candidate {candidateId}"});
         // }
         [HttpDelete("candidate/")]
-        [Authorize(Roles = "Admin, Candidate")]
+        // [Authorize(Roles = "Admin, Candidate")]
         public async Task<ActionResult> DeleteCandidateAsync(int id)
         {
             var existingCandidate = await _candidateRepository.GetAsync(id);

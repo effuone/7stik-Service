@@ -1,40 +1,59 @@
-global using Microsoft.EntityFrameworkCore;
+using System.Data;
 using System.Data.SqlClient;
+using Dapper.Contrib.Extensions;
 using Zhetistik.Core.DataAccess;
 using Zhetistik.Core.Interfaces;
-using Zhetistik.Data.Context;
 
-namespace Zhetistik.Data.Repositories
+namespace Zhetistik.Core.Repositories
 {
     public class PortfolioRepository : IPortfolioRepository
     {
-        private readonly ZhetistikAppContext _context;
         private readonly DapperContext _dapper;
 
-        public PortfolioRepository(ZhetistikAppContext context, DapperContext dapper)
+        public PortfolioRepository(DapperContext dapper)
         {
-            _context = context;
             _dapper = dapper;
         }
 
         public async Task<int> CreateAsync(Portfolio model)
         {
-            await _context.Portfolios.AddAsync(model);
-            await _context.SaveChangesAsync();
-            return model.PortfolioId;
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                string sql = @"INSERT INTO Portfolios (CandidateId, IsPublished) VALUES (@candidateId, @isPublished) SET @PortfolioId = SCOPE_IDENTITY();";
+                var command = new SqlCommand(sql, (SqlConnection)connection);
+                command.Parameters.Add(new SqlParameter("@candidateId", model.CandidateId));
+                command.Parameters.Add(new SqlParameter("@isPublished", model.IsPublished));
+                var outputParam = new SqlParameter
+                {
+                    ParameterName = "@PortfolioId",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(outputParam);
+                await command.ExecuteNonQueryAsync();
+                connection.Close();
+                return (int)outputParam.Value;
+            }
         }
-
         public async Task<bool> DeleteAsync(int id)
         {
-            var model = await _context.Candidates.FindAsync(id);
-            var result = _context.Candidates.Remove(model);
-            await _context.SaveChangesAsync();
-            return true;
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var result = await connection.DeleteAsync<Portfolio>(new Portfolio { PortfolioId = id });
+                return result;
+            }
         }
 
         public async Task<IEnumerable<Portfolio>> GetAllAsync()
         {
-            return await _context.Portfolios.ToListAsync();
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var models = (await connection.GetAllAsync<Portfolio>()).ToList();
+                return models;
+            }
         }
 
         public async Task<Portfolio> GetAsync(int id)
@@ -42,7 +61,7 @@ namespace Zhetistik.Data.Repositories
             using(var connection = _dapper.CreateConnection())
             {
                 connection.Open();
-                var model = (await connection.QueryAsync<Portfolio>($"select* from Portfolios where PortfolioId = {id}")).FirstOrDefault();
+                var model = await connection.GetAsync<Portfolio>(id);
                 return model;
             }
         }
@@ -52,18 +71,31 @@ namespace Zhetistik.Data.Repositories
             using(var connection = _dapper.CreateConnection())
             {
                 connection.Open();
-                var portfolio = (await connection.QueryAsync<Portfolio>($"SELECT* from Portfolios WHERE CandidateId = {candidateId}")).First();
-                return portfolio;
+                var model = (await connection.QueryAsync<Portfolio>($"select* from Portfolios where CandidateId = {candidateId}")).FirstOrDefault();
+                return model;
             }
         }
 
         public async Task<bool> UpdateAsync(int id, Portfolio model)
         {
-            var existingModel = await _context.Portfolios.FindAsync(id);
-            model.PortfolioId = id;
-            _context.Portfolios.Update(model);
-            await _context.SaveChangesAsync();
-            return true;
+            using(var connection = _dapper.CreateConnection())
+            {
+                string updateQuery = @"UPDATE [dbo].[Portfolios] SET CandidateId = @candidateId, IsPublished = @isPublished WHERE PortfolioId = @id";
+                var result = await connection.ExecuteAsync(updateQuery, new
+                {
+                    model.CandidateId,
+                    model.IsPublished,
+                    id
+                });
+                if(result>0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
         }
     }
 }
