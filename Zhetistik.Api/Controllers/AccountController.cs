@@ -21,12 +21,29 @@ namespace Zhetistik.Api.Controllers
         private readonly IConfiguration _configuration;
         private readonly IMailSender _mailSender;
         private readonly ILogger<AccountController> _logger;
+        private static readonly HttpClient _client;
         
         private async Task<IEnumerable<string>> GetUsersRoleAsync(ZhetistikUser user)
         {
             return await _userManager.GetRolesAsync(user);
         }
 
+        private async Task<string> PostAsync(string url, List<string> inputParams, List<string> outputParams)
+        { 
+            if(inputParams.Count!=outputParams.Count)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+            var values = new Dictionary<string, string>();
+            for (int i = 0; i < inputParams.Count; i++)
+            {
+                values.Add(inputParams[i], outputParams[i]);
+            }
+            var content = new FormUrlEncodedContent(values);
+            var response = await _client.PostAsync(url, content);
+            var responseString = await response.Content.ReadAsStringAsync();
+            return responseString;
+        }
         public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
         {
             _dbContext = dbContext;
