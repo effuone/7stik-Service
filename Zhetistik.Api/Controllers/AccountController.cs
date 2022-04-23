@@ -6,6 +6,8 @@ using Microsoft.IdentityModel.Tokens;
 using Zhetistik.Data.AuthModels;
 using Zhetistik.Data.Roles;
 using Zhetistik.Data.MailAccess;
+using System.Net;
+using Newtonsoft.Json;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -21,28 +23,21 @@ namespace Zhetistik.Api.Controllers
         private readonly IConfiguration _configuration;
         private readonly IMailSender _mailSender;
         private readonly ILogger<AccountController> _logger;
-        private static readonly HttpClient _client;
         
         private async Task<IEnumerable<string>> GetUsersRoleAsync(ZhetistikUser user)
         {
             return await _userManager.GetRolesAsync(user);
         }
 
-        private async Task<string> PostAsync(string url, List<string> inputParams, List<string> outputParams)
-        { 
-            if(inputParams.Count!=outputParams.Count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            var values = new Dictionary<string, string>();
-            for (int i = 0; i < inputParams.Count; i++)
-            {
-                values.Add(inputParams[i], outputParams[i]);
-            }
-            var content = new FormUrlEncodedContent(values);
-            var response = await _client.PostAsync(url, content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            return responseString;
+        private async Task<HttpStatusCode> SendRequest(string id)
+        {
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            var client = new HttpClient(clientHandler);
+            var zhetistikUserId = JsonConvert.SerializeObject(new {id});
+            var data = new StringContent(zhetistikUserId, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("https://localhost:7259/api/candidate/", data);
+            return response.StatusCode;
         }
         public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
         {
@@ -179,7 +174,8 @@ namespace Zhetistik.Api.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if(result.Succeeded)
             {
-                return Ok(new Response { Status = "Success", Message = "Email confirmed successfully" });
+                var statusCode = await SendRequest(user.Id);
+                return Ok(new Response { Status = "Success", Message = "Email confirmed successfully\n"+statusCode});
             }
             else
             {
