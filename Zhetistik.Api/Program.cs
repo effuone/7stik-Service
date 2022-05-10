@@ -53,7 +53,7 @@ builder.Services.AddTransient<IMailSender, MailSender>();
 
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options=>options.AddPolicy("MyPolicies", builder=>{
-    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    builder.AllowAnyHeader().AllowAnyMethod().AllowCredentials().SetIsOriginAllowed(origin=>true);
 }));
 builder.Services.AddOptions();
 builder.Services.AddMvc(options =>

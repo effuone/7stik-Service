@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using Zhetistik.Data.AuthModels;
-using Zhetistik.Data.Roles;
 using Zhetistik.Data.MailAccess;
+using Newtonsoft.Json;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -16,44 +16,33 @@ namespace Zhetistik.Api.Controllers
         private readonly ZhetistikAppContext _dbContext;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ICandidateRepository _candidateRepository;
+        private readonly IPortfolioRepository _portfolioRepository;
         private readonly UserManager<ZhetistikUser> _userManager;
         private readonly SignInManager<ZhetistikUser> _signInManager;
         private readonly IConfiguration _configuration;
         private readonly IMailSender _mailSender;
         private readonly ILogger<AccountController> _logger;
-        private static readonly HttpClient _client;
         
         private async Task<IEnumerable<string>> GetUsersRoleAsync(ZhetistikUser user)
         {
             return await _userManager.GetRolesAsync(user);
         }
 
-        private async Task<string> PostAsync(string url, List<string> inputParams, List<string> outputParams)
+        private async Task<string> PostAsync(string userId)
         { 
-            if(inputParams.Count!=outputParams.Count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-            var values = new Dictionary<string, string>();
-            for (int i = 0; i < inputParams.Count; i++)
-            {
-                values.Add(inputParams[i], outputParams[i]);
-            }
-            var content = new FormUrlEncodedContent(values);
-            var response = await _client.PostAsync(url, content);
-            var responseString = await response.Content.ReadAsStringAsync();
-            return responseString;
-        }
-        public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
-        {
-            _dbContext = dbContext;
-            _roleManager = roleManager;
-            _candidateRepository = candidateRepository;
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-            _mailSender = mailSender;
-            _logger = logger;
+            var user = new {zhetistikUserId = userId};    
+            var json = JsonConvert.SerializeObject(user);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var url = "https://localhost:7259/api/candidates";
+            HttpClientHandler clientHandler = new HttpClientHandler();
+            clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
+            using var client = new HttpClient(clientHandler);
+
+            var response = await client.PostAsync(url, data);
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
         }
 
         [AllowAnonymous]
@@ -86,7 +75,6 @@ namespace Zhetistik.Api.Controllers
                 }
                 var authClaims = new List<Claim>  
                 {
-                    new Claim("Id", user.Id),
                     new Claim("Username", user.UserName),  
                     new Claim("FirstName", user.FirstName),
                     new Claim("LastName", user.LastName),
@@ -156,7 +144,7 @@ namespace Zhetistik.Api.Controllers
                       </form>";
                 request.ToEmail = registerModel.Email;
                 await _mailSender.SendEmailAsync(request);
-                return user.Id;
+                return StatusCode(StatusCodes.Status200OK, new Response { Status = "Success", Message = "Now check your email" });  
             }  
             else
             {
@@ -179,6 +167,12 @@ namespace Zhetistik.Api.Controllers
             var result = await _userManager.ConfirmEmailAsync(user, code);
             if(result.Succeeded)
             {
+                var roleName = (await _userManager.GetRolesAsync(user)).FirstOrDefault();
+                if(roleName is "Candidate")
+                {
+                    int candidateId = await _candidateRepository.CreateAsync(user.Id);
+                    await _portfolioRepository.CreatePortfolioWithCandidateAsync(candidateId);
+                }   
                 return Ok(new Response { Status = "Success", Message = "Email confirmed successfully" });
             }
             else
@@ -236,10 +230,24 @@ namespace Zhetistik.Api.Controllers
             else
                 return HttpContext.Connection.RemoteIpAddress.MapToIPv4().ToString();
         }
+
+        public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, IPortfolioRepository portfolioRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
+        {
+            _dbContext = dbContext;
+            _roleManager = roleManager;
+            _candidateRepository = candidateRepository;
+            _portfolioRepository = portfolioRepository;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
+            _mailSender = mailSender;
+            _logger = logger;
+        }
         // [HttpGet("getRoles")]
         // public async Task<bool> GetAllRolesAsync(string role)
         // {
         //     return await _roleManager.RoleExistsAsync(role);
         // }
+
     }
 }

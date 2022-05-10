@@ -1,0 +1,5 @@
+/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/obj/Debug/net6.0/Zhetistik.ConsoleTest.csproj.AssemblyReference.cache
+/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/obj/Debug/net6.0/Zhetistik.ConsoleTest.GeneratedMSBuildEditorConfig.editorconfig
+/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/obj/Debug/net6.0/Zhetistik.ConsoleTest.AssemblyInfoInputs.cache
+/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/obj/Debug/net6.0/Zhetistik.ConsoleTest.AssemblyInfo.cs
+/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/obj/Debug/net6.0/Zhetistik.ConsoleTest.csproj.CoreCompileInputs.cache

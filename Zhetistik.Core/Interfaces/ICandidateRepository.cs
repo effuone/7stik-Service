@@ -4,6 +4,7 @@ namespace Zhetistik.Core.Interfaces
 {
     public interface ICandidateRepository : IAsyncRepository<Candidate>
     {
+        public Task<int> CreateAsync(string zhetistikUserId);
         public Task<Candidate> GetAsync(string userId);
         public Task<Candidate> GetByPortfolioAsync(int portfolioId);
         public Task<CandidateViewModel> GetCandidateViewModelAsync(int candidateId);

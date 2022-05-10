@@ -2,33 +2,11 @@ SET ANSI_NULLS ON
 GO
 SET QUOTED_IDENTIFIER ON
 GO
-CREATE PROCEDURE GetCandidates
+CREATE PROCEDURE GetCandidates @Id INT
 AS
 BEGIN
-	select 
-	portfolios.PortfolioId,
-	candidates.CandidateId,
-	users.FirstName,
-	users.LastName,
-	candidates.Birthday,
-	countries.CountryName,
-	cities.CityName,
-	schools.SchoolName,
-	candidates.GraduateYear
-	from 
-	Portfolios as portfolios,
-	Candidates as candidates,
-	AspNetUsers as users,
-	Schools as schools,
-	Locations as locations,
-	Countries as countries,
-	Cities as cities
-	where 
-	candidates.CandidateId = portfolios.CandidateId
-	and candidates.ZhetistikUserId = users.Id
-	and locations.LocationId = candidates.LocationId
-	and countries.CountryId = locations.CountryId 
-	and cities.CityId = locations.CityId
-	and schools.SchoolId = candidates.SchoolId
+	select us.UserName, us.FirstName, us.LastName, us.Email, us.PhoneNumber
+	from Candidates as can, AspNetUsers as us where us.Id = can.ZhetistikUserId and can.CandidateId = @Id
 END
 GO
+EXEC GetCandidate @Id = 1

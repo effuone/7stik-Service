@@ -1,0 +1,261 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/Zhetistik.ConsoleTest.csproj": {}
+  },
+  "projects": {
+    "/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/Zhetistik.ConsoleTest.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/Zhetistik.ConsoleTest.csproj",
+        "projectName": "Zhetistik.ConsoleTest",
+        "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/Zhetistik.ConsoleTest.csproj",
+        "packagesPath": "/home/effuone/.nuget/packages/",
+        "outputPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.ConsoleTest/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/effuone/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj": {
+                "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj"
+              },
+              "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj": {
+                "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj",
+        "projectName": "Zhetistik.Core",
+        "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj",
+        "packagesPath": "/home/effuone/.nuget/packages/",
+        "outputPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/effuone/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {
+              "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj": {
+                "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj",
+        "projectName": "Zhetistik.Data",
+        "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj",
+        "packagesPath": "/home/effuone/.nuget/packages/",
+        "outputPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/effuone/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[11.0.1, )"
+            },
+            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
+              "target": "Package",
+              "version": "[11.0.0, )"
+            },
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.0.123, )"
+            },
+            "Dapper.Contrib": {
+              "target": "Package",
+              "version": "[2.0.78, )"
+            },
+            "MailKit": {
+              "target": "Package",
+              "version": "[3.1.1, )"
+            },
+            "Microsoft.AspNetCore.Authentication.JwtBearer": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.AspNetCore.Identity.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.AspNetCore.Identity.UI": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.Tools": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Microsoft.Extensions.Configuration.UserSecrets": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
+            "Microsoft.Extensions.Hosting": {
+              "target": "Package",
+              "version": "[6.0.1, )"
+            },
+            "Microsoft.IdentityModel.Tokens": {
+              "target": "Package",
+              "version": "[6.16.0, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.1, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[6.0.3, )"
+            },
+            "System.Data.SqlClient": {
+              "target": "Package",
+              "version": "[4.8.3, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[6.16.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

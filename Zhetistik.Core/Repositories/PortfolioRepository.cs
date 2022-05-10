@@ -20,10 +20,9 @@ namespace Zhetistik.Core.Repositories
             using(var connection = _dapper.CreateConnection())
             {
                 connection.Open();
-                string sql = @"INSERT INTO Portfolios (CandidateId, IsPublished) VALUES (@candidateId, @isPublished) SET @PortfolioId = SCOPE_IDENTITY();";
+                string sql = @"INSERT INTO Portfolios (CandidateId, IsPublished) VALUES (@candidateId, 0) SET @PortfolioId = SCOPE_IDENTITY();";
                 var command = new SqlCommand(sql, (SqlConnection)connection);
                 command.Parameters.Add(new SqlParameter("@candidateId", model.CandidateId));
-                command.Parameters.Add(new SqlParameter("@isPublished", model.IsPublished));
                 var outputParam = new SqlParameter
                 {
                     ParameterName = "@PortfolioId",
@@ -36,6 +35,27 @@ namespace Zhetistik.Core.Repositories
                 return (int)outputParam.Value;
             }
         }
+        public async Task<int> CreatePortfolioWithCandidateAsync(int candidateId)
+        {
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                string sql = @"INSERT INTO Portfolios (CandidateId, IsPublished) VALUES (@candidateId, 0) SET @PortfolioId = SCOPE_IDENTITY();";
+                var command = new SqlCommand(sql, (SqlConnection)connection);
+                command.Parameters.Add(new SqlParameter("@candidateId", candidateId));
+                var outputParam = new SqlParameter
+                {
+                    ParameterName = "@PortfolioId",
+                    SqlDbType = SqlDbType.Int,
+                    Direction = ParameterDirection.Output
+                };
+                command.Parameters.Add(outputParam);
+                await command.ExecuteNonQueryAsync();
+                connection.Close();
+                return (int)outputParam.Value;
+            }
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             using(var connection = _dapper.CreateConnection())

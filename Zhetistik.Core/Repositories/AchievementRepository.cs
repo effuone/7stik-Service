@@ -65,9 +65,17 @@ namespace Zhetistik.Data.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<Achievement>> GetAchievementsByPortfolioAsync(int portfolioId)
+        public async Task<IEnumerable<AchievementViewModel>> GetAchievementsByPortfolioAsync(int portfolioId)
         {
-            throw new NotImplementedException();
+            string sql = @$"select a.AchievementId, aty.AchievementTypeName, a.AchievementName, a.Description, fl.Path
+            from Achievements as a, AchievementTypes as aty, FileModels as fl
+            where a.AchievementTypeId = aty.AchievementTypeId and a.FileModelId = fl.Id and a.PortfolioId = {portfolioId}";
+            using(var connection = _dapper.CreateConnection())
+            {
+                connection.Open();
+                var achievements = await connection.QueryAsync<AchievementViewModel>(sql);
+                return achievements;
+            }
         }
 
         public async Task<IEnumerable<AchievementViewModel>> GetAllAchievementViewModelsAsync()

@@ -11112,39 +11112,32 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\777\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\": {}
+    "/home/effuone/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
+      "projectUniqueName": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj",
       "projectName": "Zhetistik.Core",
-      "projectPath": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Core\\Zhetistik.Core.csproj",
-      "packagesPath": "C:\\Users\\777\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Core\\obj\\",
+      "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/Zhetistik.Core.csproj",
+      "packagesPath": "/home/effuone/.nuget/packages/",
+      "outputPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Core/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft\\Xamarin\\NuGet\\"
-      ],
       "configFilePaths": [
-        "C:\\Users\\777\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+        "/home/effuone/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net6.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
         "net6.0": {
           "targetAlias": "net6.0",
           "projectReferences": {
-            "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj": {
-              "projectPath": "c:\\Users\\777\\Documents\\Projects\\7stik-Service\\Zhetistik.Data\\Zhetistik.Data.csproj"
+            "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj": {
+              "projectPath": "/home/effuone/Desktop/7stik-Service/Zhetistik.Data/Zhetistik.Data.csproj"
             }
           }
         }
@@ -11173,7 +11166,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/6.0.202/RuntimeIdentifierGraph.json"
       }
     }
   }

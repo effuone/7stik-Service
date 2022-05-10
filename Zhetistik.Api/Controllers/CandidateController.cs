@@ -1,153 +1,76 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Zhetistik.Data.ViewModels;
 
 namespace Zhetistik.Api.Controllers
 {
     [ApiController]
-    [Route("api/candidates")]
+    [Route("api/candidates/")]
     public class CandidateController : ControllerBase
     {
         private readonly ICandidateRepository _candidateRepository;
         private readonly ISchoolRepository _schoolRepository;
-        private readonly IFileRepository _fileRepository;
-        private readonly IPortfolioRepository _portfolioRepository;
-        private readonly IAchievementRepository _achievementRepository;
-        private readonly UserManager<ZhetistikUser> _userManager;
         private readonly ILocationRepository _locationRepository;
+        private readonly IPortfolioRepository _portfolioRepository;
         private readonly ILogger<CandidateController> _logger;
+        private readonly UserManager<ZhetistikUser> _userManager;
 
-        public CandidateController(ICandidateRepository candidateRepository, ISchoolRepository schoolRepository, IFileRepository fileRepository, IPortfolioRepository portfolioRepository, IAchievementRepository achievementRepository, UserManager<ZhetistikUser> userManager, ILocationRepository locationRepository, ILogger<CandidateController> logger)
+        public CandidateController(ICandidateRepository candidateRepository, ISchoolRepository schoolRepository, ILocationRepository locationRepository, IPortfolioRepository portfolioRepository, ILogger<CandidateController> logger, UserManager<ZhetistikUser> userManager)
         {
             _candidateRepository = candidateRepository;
             _schoolRepository = schoolRepository;
-            _fileRepository = fileRepository;
-            _portfolioRepository = portfolioRepository;
-            _achievementRepository = achievementRepository;
-            _userManager = userManager;
             _locationRepository = locationRepository;
+            _portfolioRepository = portfolioRepository;
             _logger = logger;
+            _userManager = userManager;
         }
-
-        // [HttpGet]
-        // public async Task<IEnumerable<CandidateViewModel>> GetCandidateViewModelsAsync()
-        // {
-        //     var candidates = await _candidateRepository.GetAllAsync();
-        //     var list = new List<CandidateViewModel>();
-        //     foreach(var candidate in candidates)
-        //     {
-        //         var model = await _candidateRepository.GetCandidateViewModelAsync(candidate.CandidateId);
-        //         var portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidate.CandidateId);
-        //         var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidate.CandidateId);
-        //         var portfolioViewModel = new PortfolioViewModel();
-        //         portfolioViewModel.PortfolioId = portfolio.PortfolioId;
-        //         portfolioViewModel.IsPublished = portfolio.IsPublished;
-        //         portfolioViewModel.Achievements = achievements;
-        //         list.Add(model);
-        //     }
-        //     return list;
-        // }
-        [HttpGet("{id}")]
-        // [Authorize(Roles = "Candidate")]
-        public async Task<ActionResult<CandidateViewModel>> GetCandidateAsync(int id)
+        [HttpGet]
+        public async Task<IEnumerable<Candidate>> GetCandidatesAsync()
         {
-            var candidateViewModel = await _candidateRepository.GetCandidateViewModelAsync(id);
-            if(candidateViewModel is null)
+            return await _candidateRepository.GetAllAsync();
+        }
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Candidate>> GetCandidateAsync(int id)
+        {
+            var existingModel = await _candidateRepository.GetAsync(id);
+            if(existingModel is null)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status404NotFound, new Response{Status="Error", Message="Candidate not found"});
             }
-            var portfolio = await _portfolioRepository.GetPortfolioByCandidateAsync(candidateViewModel.CandidateId);
-            var achievements = await _achievementRepository.GetAchievementsByCandidateAsync(candidateViewModel.CandidateId);
-            var portfolioViewModel = new PortfolioViewModel();
-            portfolioViewModel.PortfolioId = portfolio.PortfolioId;
-            portfolioViewModel.IsPublished = portfolio.IsPublished;
-            portfolioViewModel.Achievements = achievements;
-            return candidateViewModel;
+            return existingModel;
+        }
+        [HttpGet]
+        [Route("vm")]
+        public async Task<ActionResult<CandidateViewModel>> GetCandidateViewModelAsync(int id)
+        {
+            var existingModel = await _candidateRepository.GetCandidateViewModelAsync(id);
+            if(existingModel is null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound, new Response{Status="Error", Message="Candidate not found"});
+            }
+            return existingModel;
         }
         [HttpPost]
-        // [Authorize(Roles = "Candidate")]
-        public async Task<ActionResult<Candidate>> PostCandidateAsync(string zhetistikUserId)
+        public async Task<ActionResult> PostCandidateAsync([FromRoute]string zhetistikUserId)
         {
-            var model = new Candidate();
+            var existingModel = await _candidateRepository.GetAsync(zhetistikUserId);
+            if(existingModel is not null)
+            {
+                return StatusCode(StatusCodes.Status400BadRequest, new Response{Status="Error", Message="Candidate already exists"});
+            }
             var user = await _userManager.FindByIdAsync(zhetistikUserId);
-            if(user is null)
-            {
-                return NotFound();
-            }
-            model.ZhetistikUserId = zhetistikUserId;
-            model.Portfolio = new Portfolio();
-            await _candidateRepository.CreateAsync(model);
-            return CreatedAtAction(nameof(GetCandidateAsync), new { id = model.CandidateId }, model);
+            var id = await _candidateRepository.CreateAsync(zhetistikUserId);
+            return StatusCode(StatusCodes.Status200OK, new Response{Status="Success", Message=$"Candidate {user.FirstName} {user.LastName} of id:{id} created"});
         }
-        [HttpPut("locations/")]
-        // [Authorize(Roles = "Candidate")]
-        public async Task<ActionResult> AddLocationAsync(int candidateId, int locationId)
-        {
-            var existingLocation = await _locationRepository.GetAsync(locationId);
-            var existingCandidate = await _candidateRepository.GetAsync(candidateId);
-            if(existingLocation is null || existingCandidate is null) 
-            {
-                return NotFound();
-            }
-            await _candidateRepository.AddLocationAsync(candidateId, existingLocation);
-            return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
-        }
-        [HttpPut("birthdate/")]
-        // [Authorize(Roles = "Candidate")]
-        public async Task<ActionResult> AddBirthdateAsync(int candidateId, int year, int month, int day)
-        {
-            var birthdate = new DateTime(year, month, day);
-            var existingCandidate = await _candidateRepository.GetAsync(candidateId);
-            if(existingCandidate is null) 
-            {
-                return NotFound();
-            }
-            await _candidateRepository.AddBirthdayAsync(candidateId, birthdate);
-            return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
-        }
-        [HttpPut("school/")]
-        // [Authorize(Roles = "Candidate")]
-        public async Task<ActionResult> AddSchoolAsync(int candidateId, int schoolId, int graduateYear)
-        {
-            var graduateDate = new DateTime(graduateYear, 5, 25);
-            var existingSchool = await _schoolRepository.GetAsync(schoolId);
-            var existingCandidate = await _candidateRepository.GetAsync(candidateId);
-            if(existingCandidate is null || existingSchool is null) 
-            {
-                return NotFound();
-            }
-            await _candidateRepository.AddSchoolAsync(candidateId, existingSchool, graduateDate);
-            return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added location to candidate {candidateId}"});
-        }
-        // [HttpPut("portfolio/")]
-        // [Authorize(Roles = "Candidate")]
-        // public async Task<ActionResult> AddAchievementAsync(int candidateId, [FromForm]CreateAchievementViewModel achievementViewModel)
-        // {
-        //     var existingCandidate = await _candidateRepository.GetAsync(candidateId);
-        //     if(existingCandidate is null) 
-        //     {
-        //         return NotFound();
-        //     }
-        //     var achievement = new Achievement();
-        //     achievement.AchievementName = achievementViewModel.AchievementName;
-        //     achievement.Description = achievementViewModel.Description;
-        //     achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
-        //     achievement.FileModel = await _fileRepository.SaveFileAsync(achievementViewModel.File);
-        //     achievement.PortfolioId = (await _portfolioRepository.GetPortfolioByCandidateAsync(candidateId)).PortfolioId;
-        //     await _achievementRepository.CreateAsync(achievement);
-        //     return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Added achievement to candidate {candidateId}"});
-        // }
-        [HttpDelete("candidate/")]
-        // [Authorize(Roles = "Admin, Candidate")]
+        [HttpDelete]
         public async Task<ActionResult> DeleteCandidateAsync(int id)
         {
-            var existingCandidate = await _candidateRepository.GetAsync(id);
-            if(existingCandidate is null) 
+            var existingModel = await _candidateRepository.GetAsync(id);
+            if(existingModel is null)
             {
-                return NotFound();
+                return StatusCode(StatusCodes.Status404NotFound, new Response{Status="Error", Message="Candidate not found"});
             }
             await _candidateRepository.DeleteAsync(id);
-            return StatusCode(StatusCodes.Status204NoContent, new Response{Status = "Success", Message = $"Deleted candidate {id}"});
+            return StatusCode(StatusCodes.Status200OK, new Response{Status="Success", Message=$"Candidate of id:{id} deleted"});
         }
     }
 }

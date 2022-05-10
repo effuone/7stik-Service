@@ -33,7 +33,7 @@ namespace Zhetistik.Data.ViewModels
         [Required]
         public string Description { get; set; }
         #nullable enable
-        public IFormFile? Image { get; set; }
+        public IFormFile? File { get; set; }
         #nullable disable
     }
 }

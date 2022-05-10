@@ -1,1 +1,0 @@
-post(`https://localhost:7259/api/account/login?email=${email}&password=${password}`)

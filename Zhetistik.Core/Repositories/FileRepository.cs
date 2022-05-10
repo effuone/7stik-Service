@@ -84,76 +84,37 @@ namespace Zhetistik.Core.Repositories
 
         public async Task<int> SaveFileAsync(string env, string path, IFormFile uploadFile)
         {
-            // using (var memoryStream = new MemoryStream())
-            // {
-            //     await uploadFile.CopyToAsync(memoryStream);
-            //     // Upload the file if less than 2 MB
-            //     if (memoryStream.Length < 2097152)
-            //     {
-            //         if(!Directory.Exists(env + $"{path}"))
-            //         {
-            //             Directory.CreateDirectory(path);
-            //         }
-            //         string fileName = uploadFile.FileName;
-            //         var physicalPath = env + @$"{path}\" + fileName;
-            //         var file = new FileModel();
-            //         file.FileName = fileName;
-            //         file.Path = physicalPath;
-            //         using(var stream = new FileStream(physicalPath, FileMode.Create))
-            //         {
-            //             await uploadFile.CopyToAsync(stream);
-            //             using(var ms = new MemoryStream())
-            //             {
-            //                 await uploadFile.CopyToAsync(ms);
-            //                 file.Content = ms.ToArray();
-            //             }
-            //         }
-            //         await _context.FileModels.AddAsync(file);
-            //         await _context.SaveChangesAsync();
-            //         return file;
-            //     }
-            //     else
-            //     {
-            //         throw new IndexOutOfRangeException();
-            //     }
-            // }
             using (var memoryStream = new MemoryStream())
             {
                 await uploadFile.CopyToAsync(memoryStream);
-                if(memoryStream.Length < 2097152)
+                // Upload the file if less than 2 MB
+                if (memoryStream.Length < 2097152)
                 {
                     if(!Directory.Exists(env + $"{path}"))
                     {
                         Directory.CreateDirectory(path);
                     }
-                    var physicalPath = env + @$"{path}\" + uploadFile.FileName;
+                    string fileName = uploadFile.FileName;
+                    var physicalPath = env + @$"{path}/" + fileName;
                     var file = new FileModel();
-                    file.Content = memoryStream.ToArray();
-                    file.FileName = uploadFile.FileName;
+                    file.FileName = fileName;
                     file.Path = physicalPath;
-                    using(var connection = _dapper.CreateConnection())
+                    using(var stream = new FileStream(physicalPath, FileMode.Create))
                     {
-                        connection.Open();
-                        string sql = @"INSERT INTO FileModels (FileName, Path, Content) VALUES (@fileName, @path, @content) SET @Id = SCOPE_IDENTITY();";
-                        var command = new SqlCommand(sql, (SqlConnection)connection);
-                        command.Parameters.Add(new SqlParameter("@fileName", file.FileName));
-                        command.Parameters.Add(new SqlParameter("@path", file.Path));
-                        command.Parameters.Add(new SqlParameter("@content", file.Content));
-                        var outputParam = new SqlParameter
+                        await uploadFile.CopyToAsync(stream);
+                        using(var ms = new MemoryStream())
                         {
-                            ParameterName = "@Id",
-                            SqlDbType = SqlDbType.Int,
-                            Direction = ParameterDirection.Output
-                        };
-                        command.Parameters.Add(outputParam);
-                        await command.ExecuteNonQueryAsync();
-                        connection.Close();
-                        return (int)outputParam.Value;
+                            await uploadFile.CopyToAsync(ms);
+                            file.Content = ms.ToArray();
+                        }
                     }
+                    await _context.FileModels.AddAsync(file);
+                    await _context.SaveChangesAsync();
+                    return file.Id;
                 }
                 else
                 {
-                    throw new OutOfMemoryException();
+                    throw new IndexOutOfRangeException();
                 }
             }
         }

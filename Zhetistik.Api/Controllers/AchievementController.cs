@@ -68,11 +68,6 @@ namespace Zhetistik.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<Achievement>> AddAchievementAsync(int portfolioId, [FromForm]CreateAchievementViewModel achievementViewModel)
         {
-            //check wheteher portfolio exists
-            //create new achievement
-            //map it
-            //save it
-            //display it
             var existingPortfolio = await _portfolioRepository.GetAsync(portfolioId);
             if(existingPortfolio is null)
             {
@@ -88,11 +83,24 @@ namespace Zhetistik.Api.Controllers
             var id = await _achievementRepository.CreateAsync(achievement);
             return CreatedAtAction(nameof(GetAchievementAsync), new { id = id }, achievement);
         }
-        // [HttpDelete]
-        // public async Task<ActionResult> DeleteAchievementAsync(int achievementId)
-        // {
-        //     //удаляется достижение
-        //     //удаляется файл
-        // }
+        [HttpPut]
+        public async Task<ActionResult> EditAchievementAsync(int achievementId, [FromForm]UpdateAchievementViewModel achievementViewModel)
+        {
+            var existingModel = await _achievementRepository.GetAsync(achievementId);
+            if(existingModel is null)
+            {
+                return StatusCode(StatusCodes.Status404NotFound);
+            }
+            var achievement = new Achievement();
+            achievement.AchievementName = achievementViewModel.AchievementName;
+            achievement.AchievementTypeId = achievementViewModel.AchievementTypeId;
+            achievement.Description = achievementViewModel.Description;
+            string newPath = @"Achievements\" + existingModel.PortfolioId + @"\";
+            var file = await _fileRepository.GetFileByAchievementAsync(achievementId);
+            await _fileRepository.DeleteFileAsync(file.Id);
+            var fileId = await _fileRepository.SaveFileAsync(_env.ContentRootPath, newPath, achievementViewModel.File);
+            achievement.FileModel = await _fileRepository.GetFileAsync(fileId);
+            return CreatedAtAction(nameof(GetAchievementAsync), achievement, achievement);
+        }
     }
 }

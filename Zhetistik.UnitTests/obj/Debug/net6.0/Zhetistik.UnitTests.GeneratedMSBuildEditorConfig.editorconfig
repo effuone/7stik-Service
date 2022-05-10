@@ -7,4 +7,4 @@ build_property.InvariantGlobalization =
 build_property.PlatformNeutralAssembly = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = Zhetistik.UnitTests
-build_property.ProjectDir = c:\Users\777\Documents\Projects\7stik-Service\Zhetistik.UnitTests\
+build_property.ProjectDir = /home/effuone/Desktop/7stik-Service/Zhetistik.UnitTests/
