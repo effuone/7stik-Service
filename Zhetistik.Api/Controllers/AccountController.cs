@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Zhetistik.Data.AuthModels;
 using Zhetistik.Data.MailAccess;
 using Newtonsoft.Json;
+using System.Net;
 
 namespace Zhetistik.Api.Controllers
 {
@@ -27,22 +28,27 @@ namespace Zhetistik.Api.Controllers
         {
             return await _userManager.GetRolesAsync(user);
         }
-
-        private async Task<string> PostAsync(string userId)
-        { 
-            var user = new {zhetistikUserId = userId};    
-            var json = JsonConvert.SerializeObject(user);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var url = "https://localhost:7259/api/candidates";
+        private async Task<HttpStatusCode> SendRequest(string id)
+        {
             HttpClientHandler clientHandler = new HttpClientHandler();
             clientHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-            using var client = new HttpClient(clientHandler);
+            var client = new HttpClient(clientHandler);
+            var zhetistikUserId = JsonConvert.SerializeObject(new {id});
+            var data = new StringContent(zhetistikUserId, Encoding.UTF8, "application/json");
+            var response = await client.PostAsync("https://localhost:7259/api/candidate/", data);
+            return response.StatusCode;
+        }
+        public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
+        {
+            _dbContext = dbContext;
+            _roleManager = roleManager;
+            _candidateRepository = candidateRepository;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
+            _mailSender = mailSender;
+            _logger = logger;
 
-            var response = await client.PostAsync(url, data);
-
-            var result = await response.Content.ReadAsStringAsync();
-            return result;
         }
 
         [AllowAnonymous]
