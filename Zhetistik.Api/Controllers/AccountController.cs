@@ -38,18 +38,6 @@ namespace Zhetistik.Api.Controllers
             var response = await client.PostAsync("https://localhost:7259/api/candidate/", data);
             return response.StatusCode;
         }
-        public AccountController(ZhetistikAppContext dbContext, RoleManager<IdentityRole> roleManager, ICandidateRepository candidateRepository, UserManager<ZhetistikUser> userManager, SignInManager<ZhetistikUser> signInManager, IConfiguration configuration, IMailSender mailSender, ILogger<AccountController> logger)
-        {
-            _dbContext = dbContext;
-            _roleManager = roleManager;
-            _candidateRepository = candidateRepository;
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-            _mailSender = mailSender;
-            _logger = logger;
-
-        }
 
         [AllowAnonymous]
         [HttpPost("login")]
